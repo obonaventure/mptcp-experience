@@ -1,8 +1,8 @@
 ---
 title: Experience with Multipath TCP
 abbrev: MPTCP Experience
-docname: draft-bonaventure-mptcp-experience-00
-date: 2014-07-01
+docname: draft-ietf-mptcp-experience-00
+date: 2014-09-16
 category: info
 
 ipr: trust200902
@@ -24,7 +24,11 @@ author:
   name: Christoph Paasch
   organization: UCLouvain
   email: Christoph.Paasch@uclouvain.be
-
+ -
+  ins: G. Detal
+  name: Gregory Detal
+  organization: UCLouvain
+  email: Gregory.Detal@uclouvain.be
  
 informative:
   RFC1812:
@@ -253,6 +257,13 @@ informative:
       - ins: R. Boreli
     seriesinfo: IEEE ICC 2014
     date: 2014
+  DetalMSS:
+    title: Adaptive MSS value
+    author:
+      - ins: G. Detal
+    seriesinfo: Post on the mptcp-dev mailing list
+    date: Sept. 2014
+    target: https://listes-2.sipr.ucl.ac.be/sympa/arc/mptcp-dev/2014-09/msg00130.html
 
    
 --- abstract
@@ -260,7 +271,6 @@ informative:
 This document discusses operational experiences of using Multipath TCP in real world networks. It lists several prominent use cases for which Multipath TCP has been considered and is being used.  It also gives insight in some heuristics and decisions that have helped to realize these use cases. Further, it presents several open issues that are yet unclear on how they can be solved.
 
 --- middle
-
 
 Introduction
 ============
@@ -281,10 +291,19 @@ TCP. Since September 2013, Multipath TCP is also supported on
 smartphones and tablets running iOS7 {{IOS7}}. There are likely
 hundreds of millions of Multipath TCP enabled devices. However, this particular Multipath TCP implementation is currently only used to support a single application. Unfortunately, there is no public information about the lessons learned from this large scale deployment.
 
-This document is organized as follows. We explain in Section 2 which types of middleboxes the Linux Kernel implementation of Multipath TCP supports and how it reacts upon encountering these. Next, we list several use cases of Multipath TCP in Section 3. Section 4 summarizes the MPTCP specific congestion controls that have been implemented. Section 5 and 6 discuss heuristics and issues with respect to subflow management as well as the scheduling across the subflows. Section 7 presents issues with respect to content delivery networks and suggests a solution to this issue. Finally, Section 8 shows an issue with captive portals where MPTCP  will behave suboptimal.
+This document is organized as follows. We explain in Section {{mbox}}
+which types of middleboxes the Linux Kernel implementation of
+Multipath TCP supports and how it reacts upon encountering
+these. Next, we list several use cases of Multipath TCP in Section
+{{usecases}. Section {{congestion} summarises the MPTCP specific
+congestion controls that have been implemented. Sections {{pm}} and
+{{scheduler}} discuss heuristics and issues with respect to subflow
+management as well as the scheduling across the subflows. Section
+{{mss}} explains some problems that occurred with subflows having
+different MSS values. Section {{cdn}} presents issues with respect to content delivery networks and suggests a solution to this issue. Finally, Section {{wifi}} shows an issue with captive portals where MPTCP  will behave suboptimal.
 
 
-Middlebox interference
+Middlebox interference {#mbox}
 ======================
 
 The interference caused by various types of middleboxes has been an important concern during the design of the Multipath TCP protocol. Three studies on the interactions between Multipath TCP and middleboxes are worth being discussed.
@@ -326,7 +345,7 @@ path. tracebox works better when routers implement the ICMP extension
 defined in {{RFC1812}}.
 
 
-Use cases
+Use cases {#usecases}
 =========
 
 
@@ -412,7 +431,7 @@ still up, a new subflow could be immediately reestablished. It would then be imm
 
 A third use case has been the coupling between software defined networking techniques such as Openflow and Multipath TCP. Openflow can be used to configure different paths inside a network.  Using an international network, {{TNC13}} demonstrates that Multipath TCP can achieve high throughput in the wide area. An interesting point to note about the measurements reported in {{TNC13}} is that the measurement setup used four paths through the WAN. Only two of these paths were disjoint. When Multipath TCP was used, the congestion control scheme ensured that only two of these paths were actually used.
 
-Congestion control
+Congestion control {#congestion}
 ==================
 
 
@@ -420,7 +439,7 @@ Congestion control has been an important problem for Multipath TCP. The standard
 
 
 
-Subflow management
+Subflow management {#pm}
 ==================
 
 The multipath capability of Multipath TCP comes from the utilization of one subflow per path. The Multipath TCP architecture {{RFC6182}} and the protocol specification {{RFC6824}} define the basic usage of the subflows and the protocol mechanisms that are required to create and terminate them. However, there are no guidelines on how subflows are used during the lifetime of a Multipath TCP session. Most of the experiments with Multipath TCP have been performed in controlled environments. Still, based on the experience running them and discussions on the mptcp-dev mailing list, interesting lessons have been learned about the management of these subflows.
@@ -527,7 +546,7 @@ Sub: time-wait      |        subflow-ACK        |
 The solution to this problem lies in an optimistic assumption that a host doing active-closure of a Multipath TCP connection by sending a DATA_FIN will soon also send a FIN on all its in subflows. Thus, the passive closer of the connection can simply wait for the peer to send exactly this FIN - enforcing passive closure even on the subflows. Of course, to avoid consuming resources indefinitely, a timer must limit the time our implementation waits for the FIN.
 
 
-Packet schedulers
+Packet schedulers {#scheduler}
 =================
 
 In a Multipath TCP implementation, the packet scheduler is the algorithm that is executed when transmitting each packet to decide on which subflow it needs to be transmitted. The packet scheduler itself does not have any impact on the interoperability of Multipath TCP implementations. However, it may clearly impact the performance of Multipath TCP sessions. It is important to note that the problem of scheduling Multipath TCP packets among subflows is different from the problem of scheduling SCTP messages. SCTP implementations also include schedulers, but these are used to schedule the different streams. Multipath TCP uses a single data stream.
@@ -536,8 +555,42 @@ Various researchers have explored theoretically and by simulations the problem o
 
 Another study of the packet schedulers is presented in {{PAMS2014}}. This study relies on simulations with the Multipath TCP implementation in the Linux kernel. The simulation scenarios discussed in {{PAMS2014}} confirm the impact of the packet scheduler on the performance of Multipath TCP.
 
+Segment size selection {#mss}
+======================
 
-Interactions with the Domain Name System
+When an application performs a write/send system call, the kernel 
+allocates a packet buffer (sk_buff in Linux) to store the data the 
+application wants to send. The kernel will store at most one MSS 
+(Maximum Segment Size) of data per buffer. As MSS can differ amongst 
+subflows, an MPTCP implementation must select carefully the MSS used 
+to generate application data. The Linux kernel implementation 
+had various ways of selecting the MSS: minimum or maximum amongst the 
+different subflows. However, these heuristics of MSS selection can cause significant 
+performances issues in some environment. Consider the following 
+example. An MPTCP connection has two established subflows that 
+respectively use a MSS of 1420 and 1428 bytes. If MPTCP selects the maximum,
+then the application will generate segments of 1428 bytes of data. An 
+MPTCP implementation will have to split the segment in two (a 
+1420-byte and 8-byte segments) when pushing on the subflow with the 
+smallest MSS. The latter segment will introduce a large overhead as 
+for a single data segment 2 slots will be used in the congestion 
+window (in packets) therefore reducing by ~2 the potential throughput 
+(in bytes/s) of this subflow. Taking the smallest MSS does not solve 
+the issue as there might be a case where the sublow with the smallest 
+MSS will only participate marginally to the overall performance 
+therefore reducing the potential throughput of the other subflows. 
+
+The Linux implementation recently took another approach {{DetalMSS}}. Instead of 
+selecting the minimum and maximum values, it now dynamically adapts 
+the MSS based on the contribution of all the subflows to the 
+connection's throughput. For this it computes, for each subflow, the potential 
+throughput achieved by selecting each MSS value and by taking into 
+account the lost space in the cwnd. It then selects the MSS that allows 
+to achieve the highest potential throughput. 
+
+
+
+Interactions with the Domain Name System {#cdn}
 ========================================
 
 Multihomed clients such as smartphones could lead to operational problems when interacting with the Domain Name System. When a single-homed client performs a DNS query, it receives from its local resolver the best answer for its request. If the client is multihomed, the answer returned to the DNS query may vary with the interface over which it has been sent.
@@ -568,7 +621,7 @@ Multipath TCP session from cdn1 or cdn2 would potentially use both the cellular 
 
 
 
-Captive portals
+Captive portals {#wifi}
 ===============
 
 Multipath TCP enables a host to use different interfaces to reach a server. In theory, this should ensure connectivity when at least one of the interfaces is active. In practice however, there are some particular scenarios with captive portals that may cause operational problems. The reference environment is the following :
@@ -594,6 +647,8 @@ default route via both interfaces, it will typically prefer to use the
 WiFi interface to send its DNS request and create the first subflow. This is not optimal with Multipath TCP. A better approach would probably be to try a few attempts on the WiFi interface and then try to use the second interface for the initial subflow as well.
 
 
+
+
 Conclusion
 ==========
 
@@ -606,3 +661,9 @@ Acknowledgements
 
 This work was partially supported by the FP7-Trilogy2 project. We would like to thank all the implementers and users of the Multipath TCP implementation in the Linux kernel. 
 
+Changelog
+================
+
+- initial version : September 16th, 2014 : Added section {{mss}} that
+  discusses some performance problems that appeared with the Linux
+  implementation when using subflows having different MSS values

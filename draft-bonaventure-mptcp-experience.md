@@ -1,8 +1,8 @@
 ---
 title: Experience with Multipath TCP
 abbrev: MPTCP Experience
-docname: draft-ietf-mptcp-experience-00
-date: 2014-09-16
+docname: draft-ietf-mptcp-experience-01
+date: 2015-03-08
 category: info
 
 ipr: trust200902
@@ -27,8 +27,8 @@ author:
  -
   ins: G. Detal
   name: Gregory Detal
-  organization: UCLouvain
-  email: Gregory.Detal@uclouvain.be
+  organization: UCLouvain and Tessares
+  email: Gregory.Detal@tessares.net
  
 informative:
   RFC1812:
@@ -264,6 +264,14 @@ informative:
     seriesinfo: Post on the mptcp-dev mailing list
     date: Sept. 2014
     target: https://listes-2.sipr.ucl.ac.be/sympa/arc/mptcp-dev/2014-09/msg00130.html
+  StrangeMbox:
+    title: Multipath TCP through a strange middlebox
+    author:
+      - ins: O. Bonaventure
+    seriesinfo: Blog post
+    date: Jan. 2015
+    target: http://blog.multipath-tcp.org/blog/html/2015/01/30/multipath_tcp_through_a_strange_middlebox.html
+
 
    
 --- abstract
@@ -344,6 +352,13 @@ tracebox to detect any interference caused by middleboxes on a given
 path. tracebox works better when routers implement the ICMP extension
 defined in {{RFC1812}}.
 
+Users of the Multipath TCP implementation have reported some
+experience with middlebox interference. The strangest scenario has
+been a middlebox that accepts the Multipath TCP options in the SYN
+segment but later replaces Multipath TCP options with a TCP EOL
+option {{StrangeMbox}}. This causes Multipath TCP to perform a
+fallback to regular TCP without any impact on the application.
+
 
 Use cases {#usecases}
 =========
@@ -351,7 +366,26 @@ Use cases {#usecases}
 
 Multipath TCP has been tested in several use cases. Several of the papers published in the scientific litterature have identified possible improvements that are worth being discussed here.
 
-A first, although initially unexpected, documented use case for Multipath TCP has been the datacenters {{HotNets}}{{SIGCOMM11}}. Today's datacenters are designed to provide several paths between single-homed servers. The multiplicity of these paths comes from the utilization of Equal Cost Multipath (ECMP) and other load balancing techniques inside the datacenter. Most of the deployed load balancing techniques in these datacenters rely on hashes computed or the five tuple to ensure that all packets from the same TCP connection will follow the same path to prevent packet reordering. The results presented in {{HotNets}} demonstrate by simulations that Multipath TCP can achieve a better utilization of the available network by using multiple subflows for each Multipath TCP session. Although {{RFC6182}} assumes that at least one of the communicating hosts has several IP addresses, {{HotNets}} demonstrates that there are also benefits when both hosts are single-homed. This idea was pursued further in {{SIGCOMM11}} where  the Multipath TCP implementation in the Linux kernel was modified to be able to use several subflows from the same IP address. Measurements performed in a public datacenter showed performance improvements with Multipath TCP.
+A first, although initially unexpected, documented use case for
+Multipath TCP has been the datacenters
+{{HotNets}}{{SIGCOMM11}}. Today's datacenters are designed to provide
+several paths between single-homed servers. The multiplicity of these
+paths comes from the utilization of Equal Cost Multipath (ECMP) and
+other load balancing techniques inside the datacenter. Most of the
+deployed load balancing techniques in these datacenters rely on hashes
+computed or the five tuple to ensure that all packets from the same
+TCP connection will follow the same path to prevent packet
+reordering. The results presented in {{HotNets}} demonstrate by
+simulations that Multipath TCP can achieve a better utilization of the
+available network by using multiple subflows for each Multipath TCP
+session. Although {{RFC6182}} assumes that at least one of the
+communicating hosts has several IP addresses, {{HotNets}} demonstrates
+that there are also benefits when both hosts are single-homed. This
+idea was pursued further in {{SIGCOMM11}} where  the Multipath TCP
+implementation in the Linux kernel was modified to be able to use
+several subflows from the same IP address. Measurements performed in a
+public datacenter showed performance improvements with Multipath TCP
+{{SIGCOMM11}}. 
 
 Although ECMP is widely used inside datacenters, this is not the only environment where there are different paths between a pair of hosts. ECMP and other load balancing techniques such as LAG are widely used in today's network and having multiple paths between a pair of single-homed hosts is becoming the norm instead of the exception. Although these multiple paths have often the same cost (from an IGP metrics viewpoint), they do not necessarily have the same performance. For example, {{IMC13c}} reports the results of a long measurement study showing that load balanced Internet paths between that same pair of hosts can have huge delay differences.
 
@@ -435,7 +469,7 @@ Congestion control {#congestion}
 ==================
 
 
-Congestion control has been an important problem for Multipath TCP. The standardised congestion control scheme for Multipath TCP is defined in {{RFC6356}} and {{NSDI11}}. This congestion control scheme has been implemented in the Linux implementation of Multipath TCP. Linux uses a modular architecture to support various congestion control schemes. This architecture is applicable for both regular TCP and Multipath TCP. While the coupled congestion control scheme defined in {{RFC6356}} is the default congestion control scheme in the Linux implementation, other congestion control schemes have been added. The second congestion control scheme is OLIA {{CONEXT12}}. This congestion control scheme is also an adaptation of the NewReno single path congestion control scheme to support multiple paths. Simulations and measurements have shown that it provides some performance benefits compared to the the default congestion control scheme {{CONEXT12}}. Measurement over a wide range of parameters reported in {{CONEXT13}} also indicate some benefits with the OLIA congestion control scheme. Recently, a delay-based congestion control scheme has been ported to the Multipath TCP implementation in the Linux kernel. This congestion control scheme has been evaluated by using simulations in {{ICNP12}}. As of this writing, it has not yet been evaluated by performing large measurement campaigns.
+Congestion control has been an important problem for Multipath TCP. The standardised congestion control scheme for Multipath TCP is defined in {{RFC6356}} and {{NSDI11}}. This congestion control scheme has been implemented in the Linux implementation of Multipath TCP. Linux uses a modular architecture to support various congestion control schemes. This architecture is applicable for both regular TCP and Multipath TCP. While the coupled congestion control scheme defined in {{RFC6356}} is the default congestion control scheme in the Linux implementation, other congestion control schemes have been added. The second congestion control scheme is OLIA {{CONEXT12}}. This congestion control scheme is also an adaptation of the NewReno single path congestion control scheme to support multiple paths. Simulations and measurements have shown that it provides some performance benefits compared to the the default congestion control scheme {{CONEXT12}}. Measurement over a wide range of parameters reported in {{CONEXT13}} also indicate some benefits with the OLIA congestion control scheme. Recently, a delay-based congestion control scheme has been ported to the Multipath TCP implementation in the Linux kernel. This congestion control scheme has been evaluated by using simulations in {{ICNP12}}. 
 
 
 
@@ -667,3 +701,6 @@ Changelog
 - initial version : September 16th, 2014 : Added section {{mss}} that
   discusses some performance problems that appeared with the Linux
   implementation when using subflows having different MSS values
+
+- update with a description of the middlebox that replaces an unknown
+  TCP option with EOL {{StrangeMbox}}

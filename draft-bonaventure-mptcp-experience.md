@@ -478,10 +478,10 @@ interface remains up {{Cellnet12}}. This implies that the cellular
 interface can remain idle and battery capacity is preserved. When the
 WiFi interface fails, new subflows are established over the cellular
 interface in order to preserve the established Multipath TCP sessions.
-Compared to the backup mode described earlier, this mode of operation
+Compared to the backup mode described earlier, measurements
+reported in {{Cellnet12}} indicate that this mode of operation
 is characterised by a throughput drop while the cellular interface is
-brought up and the subflows are reestablished. During this time, no
-data packet is transmitted.
+brought up and the subflows are reestablished. 
 
 From a protocol viewpoint, {{Cellnet12}} discusses the problem posed
 by the unreliability of the ADD\_ADDR option and proposes a small
@@ -493,9 +493,10 @@ operational problem in real deployments.
 Another study of the performance of Multipath TCP in wireless networks
 was reported  in {{IMC13b}}. This study uses laptops connected to
 various cellular ISPs and WiFi hotspots. It compares various file
-transfer scenarios and concludes based on measurements with the
-Multipath TCP implementation in the Linux kernel that "MPTCP provides
-a robust data transport and reduces variations in download latencies".
+transfer scenarios. {{IMC13b}} observes that 4-path MPTCP
+outperforms 2-path MPTCP, especially for larger files. The comparison
+between LIA, OLIA and Reno does not reveal a significant performance
+difference for file sizes smaller than 4MB. 
 
 A different study of the performance of Multipath TCP with two
 wireless networks is presented in {{INFOCOM14}}. In this study the
@@ -836,8 +837,8 @@ The second subflow manager that is currently supported by the
 Multipath TCP implementation in the Linux kernel is the ndiffport 
 subflow manager. This manager was initially created to exploit 
 the path diversity that exists between single-homed hosts due to 
-the utilization of flow-based load balancing techniques. This 
-subflow manager creates N subflows between the same pair of IP 
+the utilization of flow-based load balancing techniques {{SIGCOMM11}}.
+This subflow manager creates N subflows between the same pair of IP 
 addresses. The N subflows are created by the client and differ 
 only in the source port selected by the client. It was not
 designed to be used on multihomed hosts.
@@ -890,8 +891,8 @@ TCP to reach a higher performance. As of this writing, we are not
 aware of any implementation of this kind of tweaking.
 
 However, from an implementation point-of-view supporting different
-destination ports for the same Multipath TCP connection introduces
-a new performance issue. A legacy implementation of a TCP stack
+destination ports for the same Multipath TCP connection can cause
+some issues. A legacy implementation of a TCP stack
 creates a listening socket to react upon incoming SYN segments.
 The listening socket is handling the SYN segments that are sent
 on a specific port number. Demultiplexing incoming segments can
@@ -988,8 +989,13 @@ in {{CSWS14}}. The experiments and measurements described in
 be the best compromise from a performance viewpoint.
 Another study of the packet schedulers is presented in {{PAMS2014}}.
 This study relies on simulations with the Multipath TCP implementation
-in the Linux kernel. These simulations confirm the impact of the
-packet scheduler on the performance of Multipath TCP.
+in the Linux kernel. They compare the lowest-rtt-first with the
+round-robin and a random scheduler. They show some situations
+where the lowest-rtt-first scheduler does not perform as well as
+the other schedulers, but there are many scenarios where the
+opposite is true. {{PAMS2014}} notes that "it is highly likely that
+the optimal scheduling strategy depends on the characteristics of the
+paths being used."
 
 Segment size selection {#mss}
 ======================

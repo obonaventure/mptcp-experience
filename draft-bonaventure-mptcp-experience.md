@@ -36,13 +36,14 @@ informative:
   RFC6182:
   RFC6356:
   RFC6824:
-  I-D.vandergaast-edns-client-subnet:
+  I-D.ietf-dnsop-edns-client-subnet:
   I-D.eardley-mptcp-implementations-survey:
   I-D.walid-mptcp-congestion-control:
   I-D.lhwxz-gre-notifications-hybrid-access:
   I-D.boucadair-mptcp-max-subflow:
   I-D.lhwxz-hybrid-access-network-architecture:
   I-D.wei-mptcp-proxy-mechanism:
+  I-D.hampel-mptcp-proxies-anchors:
   I-D.deng-mptcp-proxy:
   MBTest:
     title: MBTest
@@ -54,8 +55,19 @@ informative:
     title: tracebox
     author:
       - ins: G. Detal
+      - ins: O. Tilmans
     target: http://www.tracebox.org
     date: 2013
+  TMA2015:
+   title: A First Look at Real Multipath TCP Traffic
+   author:
+    - ins: B. Hesmans
+    - ins: H. Tran Viet
+    - ins: R. Sadre
+    - ins: O. Bonaventure
+   seriesinfo: Traffic Monitoring and Analysis
+   date: 2015
+   target: http://inl.info.ucl.ac.be/publications/first-look-real-multipath-tcp-traffic
   HotMiddlebox13:
     title: Are TCP Extensions Middlebox-proof?
     author:
@@ -79,6 +91,12 @@ informative:
     seriesinfo: Proceedings of the 9th ACM SIGCOMM Workshop on Hot Topics in Networks (Hotnets-IX)
     date: 2010
     target: http://doi.acm.org/10.1145/1868447.1868457   
+  KT:
+   author:
+     - ins: S. Seo
+   title: KT's GiGA LTE
+   target: https://www.ietf.org/proceedings/93/slides/slides-93-mptcp-3.pdf
+   date: 02015-07
   IMC11:
     author:
       - ins: M. Honda
@@ -101,7 +119,7 @@ informative:
     title: Revealing Middlebox Interference with Tracebox
     seriesinfo: Proceedings of the 2013 ACM SIGCOMM conference on Internet measurement conference
     date: 2013
-    target: http://inl.info.ucl.ac.be/publications/revealing-middlebox-interference-tracebox  
+    target: http://inl.info.ucl.ac.be/publications/revealing-middlebox-interference-tracebox
   IMC13b:
     author:
       - ins: Y. Chen
@@ -189,7 +207,17 @@ informative:
       - ins: S. Barre
       - ins: et al.
     title:  Multipath TCP implementation in the Linux kernel
-    target: http://www.multipath-tcp.org 
+    target: http://www.multipath-tcp.org
+  Apple-MPTCP:
+   author:
+     - ins: Apple, Inc.
+   title: iOS - Multipath TCP Support in iOS 7
+   target: https://support.apple.com/en-us/HT201373
+  FreeBSD-MPTCP:
+   author:
+    - ins: . Williams
+   title: Multipath TCP For FreeBSD Kernel Patch v0.5
+   target:     http://caia.swin.edu.au/urp/newtcp/mptcp  
   INFOCOM14:
     author: 
       - ins: Y. Lim
@@ -227,6 +255,11 @@ informative:
     title: Multipath TCP Support in iOS 7
     target: http://support.apple.com/kb/HT5977
     date: 2014-01
+  ietf88:
+    author:
+      - ins: L. Stewart
+    title: IETF'88 Meeting minutes of the MPTCP working group
+    target: http://tools.ietf.org/wg/mptcp/minutes?item=minutes-88-mptcp.html
   CONEXT12:
     author:
       - ins: R. Khalili
@@ -282,6 +315,7 @@ informative:
       - ins: O. Bonaventure
     seriesinfo: Mobicom 2015 (Poster)
     date: Sept. 2015
+    target: 
   HotMiddlebox13b:
     title: Multipath in the Middle(Box)
     author:
@@ -311,18 +345,32 @@ helped to realize these use cases.
 Introduction
 ============
 
+Multipath TCP was standardized in {{RFC6824}} and five independant implementations
+have been developed {{I-D.eardley-mptcp-implementations-survey}}. As
+of September 2015, Multipath TCP has been or is being implemented on
+the following platforms :
 
-Multipath TCP was standardized in {{RFC6824}} and four implementations
-have been developed {{I-D.eardley-mptcp-implementations-survey}}.
+ - Linux kernel {{MultipathTCP-Linux}} 
+ - Apple iOS and MacOS {{Apple-MPTCP}}
+ - Citrix load balancers
+ - FreeBSD {{FreeBSD-MPTCP}}
+ - Oracle
+
+The first three implementations
+{{I-D.eardley-mptcp-implementations-survey}} are known to
+interoperate. The last twos are currently being tested and improved
+against the Linux implementation. Three of these implementations are
+open-source. Apple's implementation is widely deployed.
+
 Since the publication of {{RFC6824}}, experience has been
 gathered by various  network researchers and users about the
 operational issues that arise when Multipath TCP is used in
 today's Internet.
 
 When the MPTCP working group was created, several use cases for
-Multipath TCP were identified {{RFC6182}}. Since then, over use cases
+Multipath TCP were identified {{RFC6182}}. Since then, other use cases
 have been proposed and some have been tested and even deployed. We
-describe these use cases in section {{usecases}}.
+describe these use cases in  {{usecases}}.
 
 The second part of the document focuses on the operational
 experience with Multipath TCP. Most of this experience
@@ -337,7 +385,7 @@ This Multipath TCP implementation is actively maintained and
 continuously improved. It is used on various types of hosts,
 ranging from smartphones or embedded routers to high-end servers.
 
-The Multipath TCP implementation in the Linux kernel is is not,
+The Multipath TCP implementation in the Linux kernel iis not,
 by far, the most widespread deployment of Multipath
 TCP. Since September 2013, Multipath TCP is also supported on
 smartphones and tablets running iOS7 {{IOS7}}. There are likely
@@ -349,18 +397,18 @@ scale deployment.
 
 The second part of this is document is organized as follows.
 Supporting the middleboxes was one of the difficult issues in
-designing the Multipath TCP protocol. We explain in section {{mbox}}
+designing the Multipath TCP protocol. We explain in  {{mbox}}
 which types of middleboxes the Linux Kernel implementation of
 Multipath TCP supports and how it reacts upon encountering
-these. Section {{congestion}} summarises the MPTCP specific
-congestion controls that have been implemented. Sections {{pm}} and
+these.  {{congestion}} summarises the MPTCP specific
+congestion controls that have been implemented.  {{pm}} and
 {{scheduler}} discuss heuristics and issues with respect to subflow
-management as well as the scheduling across the subflows. Section
+management as well as the scheduling across the subflows. 
 {{mss}} explains some problems that occurred with subflows having
-different MSS values. Section {{cdn}} presents issues with respect
+different Maximum Segment Size (MSS) values.  {{cdn}} presents issues with respect
 to content delivery networks and suggests a solution to this issue.
-Finally, section {{wifi}} documents an issue with captive portals
-where MPTCP  will behave suboptimal.
+Finally,  {{wifi}} documents an issue with captive portals
+where MPTCP  will behave suboptimally.
 
 Use cases {#usecases}
 =========
@@ -374,29 +422,30 @@ Datacenters {#dc}
 -----------
 
 A first, although initially unexpected, documented use case for
-Multipath TCP has been the datacenters
+Multipath TCP has been in datacenters
 {{HotNets}}{{SIGCOMM11}}. Today's datacenters are designed to provide
 several paths between single-homed servers. The multiplicity of these
 paths comes from the utilization of Equal Cost Multipath (ECMP) and
 other load balancing techniques inside the datacenter. Most of the
-deployed load balancing techniques in these datacenters rely on hashes
-computed or the five tuple to ensure that all packets from the same
-TCP connection will follow the same path to prevent packet
-reordering. The results presented in {{HotNets}} demonstrate by
+deployed load balancing techniques in datacenters rely on hashes
+computed over the five tuple. Thus all packets from the same TCP
+connection follow the same path and so are not reordered.
+The results in {{HotNets}} demonstrate by
 simulations that Multipath TCP can achieve a better utilization of the
 available network by using multiple subflows for each Multipath TCP
 session. Although {{RFC6182}} assumes that at least one of the
 communicating hosts has several IP addresses, {{HotNets}} demonstrates
-that there are also benefits when both hosts are single-homed. This
-idea was pursued further in {{SIGCOMM11}} where  the Multipath TCP
-implementation in the Linux kernel was modified to be able to use
-several subflows from the same IP address. Measurements performed in a
-public datacenter showed performance improvements with Multipath TCP
-{{SIGCOMM11}}. 
+that Multipath TCP is beneficial when both hosts are single-homed. This
+idea is analysed in more details in {{SIGCOMM11}} where  the Multipath TCP
+implementation in the Linux kernel is modified to be able to use
+several subflows from the same IP address. Measurements in a public
+datacenter show the quantitative benefits of Multipath TCP
+{{SIGCOMM11}} in this environment. 
 
 Although ECMP is widely used inside datacenters, this is not the only
 environment where there are different paths between a pair of hosts.
-ECMP and other load balancing techniques such as LAG are widely used
+ECMP and other load balancing techniques such as Link Aggregation
+Groups (LAG) are widely used
 in today's network and having multiple paths between a pair of
 single-homed hosts is becoming the norm instead of the exception.
 Although these multiple paths have often the same cost (from an IGP
@@ -411,10 +460,11 @@ Cellular/WiFi Offload {#smartphones}
 A second use case that has been explored by several network
 researchers is the cellular/WiFi offload use case. Smartphones or
 other mobile devices equipped with two wireless interfaces are a very
-common use case for Multipath TCP. As of this writing, this is also
+common use case for Multipath TCP. In September 2015, this is also
 the largest deployment of Multipath-TCP enabled devices {{IOS7}}.
-Unfortunately, as there are no public measurements about this
-deployment, we can only rely on published papers that have mainly
+It has been briefly discussed during IETF88 {{ietf88}}, but there is
+no published paper or report that analyses this deployment.
+For this reason, we only discuss published papers that have mainly
 used the Multipath TCP implementation in the Linux kernel for
 their experiments.
 
@@ -430,7 +480,7 @@ performance of regular TCP over the best performing path. Two
 heuristics, reinjection and penalization, are proposed in {{NSDI12}}
 to solve this identified performance problem. These two heuristics
 have since been used in the Multipath TCP implementation in the Linux
-kernel. {{CONEXT13}} explored the problem in more details and revealed
+kernel. {{CONEXT13}} explored the problem in more detail and revealed
 some other scenarios where Multipath TCP can have difficulties in
 efficiently pooling the available paths. Improvements to the Multipath
 TCP implementation in the Linux kernel are proposed in {{CONEXT13}}
@@ -446,8 +496,7 @@ and uses both wireless interfaces. This mode provides fast handover
 from WiFi to cellular or the opposite when the user
 moves. Measurements presented in {{CACM14}} show that the handover
 from one wireless network to another is not an abrupt process. When
-a host moves, it does not experience either excellent connectivity or
-no connectivity at all. Instead, there are regions where the quality
+a host moves, there are regions where the quality
 of one of the  wireless networks is weaker than the other, but the
 host considers this wireless network to still be up. When a mobile
 host enters such regions, its ability to send packets over another
@@ -456,19 +505,18 @@ clearly illustrated from the packet trace discussed in {{CACM14}}.
 
 Many cellular networks use volume-based pricing and users often prefer
 to use unmetered WiFi networks when available instead of metered
-cellular networks. {{Cellnet12}} implements the support for the
+cellular networks. {{Cellnet12}} implements support for the
 MP\_PRIO option to explore two other modes of operation. 
 
 In the backup mode, Multipath TCP opens a TCP subflow over each
 interface, but the cellular interface is configured in backup mode.
-This implies that data only flows over the WiFi interface when both
+This implies that data only flows over only the WiFi interface when both
 interfaces are considered to be active. If the WiFi interface fails,
 then the traffic switches quickly to the cellular interface, ensuring
 a smooth handover from the user's viewpoint {{Cellnet12}}. The cost of
-this approach is that the WiFi and cellular interfaces likely
+this approach is that the WiFi and cellular interfaces are likely to
 remain active all the time since all subflows are established over
 the two interfaces.
-
 
 The single-path mode is slightly different. This mode benefits from
 the break-before-make capability of Multipath TCP. When an MPTCP
@@ -476,7 +524,7 @@ session is established, a subflow is created over the WiFi interface.
 No packet is sent over the cellular interface as long as the WiFi
 interface remains up {{Cellnet12}}. This implies that the cellular
 interface can remain idle and battery capacity is preserved. When the
-WiFi interface fails, new subflows are established over the cellular
+WiFi interface fails, a new subflow is established over the cellular
 interface in order to preserve the established Multipath TCP sessions.
 Compared to the backup mode described earlier, measurements
 reported in {{Cellnet12}} indicate that this mode of operation
@@ -504,7 +552,7 @@ two networks had different qualities : a good network and a lossy
 network. When using two paths with different packet loss ratios, the
 Multipath TCP congestion control scheme moves traffic away from the
 lossy link that is considered to be congested. However, {{INFOCOM14}}
-documents an interesting scenario that is summarised in the
+documents an interesting scenario that is summarised in 
 {{figsimple}}.
 
 
@@ -548,7 +596,7 @@ Multipath TCP proxies {#proxy}
 
 As Multipath TCP is not yet widely deployed on both clients and servers,
 several deployments have used various forms of proxies. Two families
-solutions are currently being used or tested {{I-D.deng-mptcp-proxy}}. 
+of solutions are currently being used or tested {{I-D.deng-mptcp-proxy}}. 
 
 A first use case is when a Multipath TCP enabled client wants to use
 several interfaces to reach a regular TCP server. A typical use case
@@ -559,14 +607,26 @@ server would enable the smartphone to use Multipath TCP to access
 regular web servers. Obviously, this solution only works for applications
 that rely on HTTP. Another possibility is to use a proxy that can
 convert any Multipath TCP connection into a regular TCP connection.
-The SOCKS protocol {{RFC1928}} is an example of such a protocol. Other
-proxies have been proposed {{I-D.wei-mptcp-proxy-mechanism}} 
-{{HotMiddlebox13b}}.
-Measurements performed with smartphones {{Mobicom15}} show that
+Multipath TCP-specific proxies have been proposed {{I-D.wei-mptcp-proxy-mechanism}} 
+{{HotMiddlebox13b}} {{I-D.hampel-mptcp-proxies-anchors}}. 
+
+Another possibility leverages the SOCKS protocol {{RFC1928}}. SOCKS
+is often used in enterprise networks to allow clients to reach
+external servers. For this, the client opens a TCP connection to the
+SOCKS server that relays it to the final destination. If both the client
+and the SOCKS server use Multipath TCP, but not the final destination,
+then Multipath TCP can still be used on the path between the client
+and the SOCKS server. At IETF'93, Korea Telecom announced that they
+have deployed in June 2015 a commercial service that uses Multipath
+TCP on smartphones. These smartphones access regular TCP servers
+through a SOCKS proxy. This enables them to achieve throughputs of up
+to 850 Mbps {{KT}}. 
+
+Measurements performed with Android smartphones {{Mobicom15}} show that
 popular applications work correctly through a SOCKS
 proxy and Multipath TCP enabled smartphones. 
-Thanks to Multipath TCP, long connections can be spread over the two
-available interfaces. However, for short connections, most of the data
+Thanks to Multipath TCP, long-lived connections can be spread over the two
+available interfaces. However, for short-lived connections, most of the data
 is sent over the initial subflow that is created over the interface
 corresponding to the default route and the second subflow is almost
 not used.
@@ -576,8 +636,7 @@ inside access networks. Various network operators are discussing and
 evaluating solutions for hybrid access networks {{BBF-WT348}}. 
 Such networks arise
 when a network operator controls two different access network
-technologies,
-e.g. DSL and LTE, and wants to combine them to improve the bandwidth
+technologies, e.g. wired and cellular, and wants to combine them to improve the bandwidth
 offered to the endusers {{I-D.lhwxz-hybrid-access-network-architecture}}.
 Several solutions are currently investigated for such networks
 {{BBF-WT348}}.
@@ -587,7 +646,7 @@ creates a normal TCP connection, it is intercepted by the Hybrid CPE
 can use the available access networks (DSL and LTE in the example).
 The Hybrid Access Gateway (HAG) does the opposite to ensure that the
 regular server see a normal TCP connection. Some of the solutions
-that are currently discussed for those hybrid networks use
+that are currently discussed for hybrid networks use
 Multipath TCP on the HCPE and the HAG. Other solutions rely on
 tunnels between the HCPE and the
 HAG {{I-D.lhwxz-gre-notifications-hybrid-access}}.
@@ -595,9 +654,9 @@ HAG {{I-D.lhwxz-gre-notifications-hybrid-access}}.
 
 ~~~~~~~~~~
 
-client --- HCPE ------ dsl ------- HAG --- internet --- server 
+client --- HCPE ------ DSL ------- HAG --- internet --- server 
             |                       |
-            +------- lte -----------+
+            +------- LTE -----------+
 
 ~~~~~~~~~~
 {: #fighybrid title="Hybrid Access Network"}
@@ -613,10 +672,10 @@ Middlebox interference {#mbox}
 The interference caused by various types of middleboxes has been
 an important concern during the design of the Multipath TCP protocol.
 Three studies on the interactions between Multipath TCP and
-middleboxes are worth being discussed.
+middleboxes are worth discussing.
 
-The first analysis was described in {{IMC11}}. This paper was the main
-motivation for including inside Multipath TCP various techniques to
+The first analysis appears in {{IMC11}}. This paper was the main
+motivation for Multipath TCP incorporating various techniques to
 cope with middlebox interference. More specifically, Multipath TCP
 has been designed to cope with middleboxes that :
 
@@ -628,7 +687,7 @@ has been designed to cope with middleboxes that :
  - modify the payload of TCP segments 
 
 These middlebox interferences have all been included in the MBtest
-suite {{MBTest}}. This test suite has been used {{HotMiddlebox13}}
+suite {{MBTest}}. This test suite is used in {{HotMiddlebox13}}
 to verify the reaction of the Multipath TCP implementation in the
 Linux kernel when faced with middlebox interference.  The test
 environment used for this evaluation is a dual-homed client connected
@@ -653,10 +712,21 @@ figure 4 in section 3.3
 a corner case with segment splitting that may lead to a
 desynchronisation between the two hosts.
 
-
 The interactions between Multipath TCP and real deployed middleboxes
 is also analyzed in {{HotMiddlebox13}} and a particular scenario with
 the FTP application level gateway running on a NAT is described.
+
+Middlebox interference can also be detected by analysing packet
+traces on Multipath TCP enabled servers. 
+A closer look at the packets received on the multipath-tcp.org server 
+{{TMA2015}} shows that among the 184,000 Multipath TCP connections, 
+only 125 of them were falling back to regular TCP. These connections
+originated from 28 different client IP addresses. These include 91 HTTP 
+connections and 34 FTP connections. The FTP interference is expected 
+and due to Application Level Gateways running home routers. The HTTP 
+interference appeared only on the direction from server to client and 
+could have been caused by transparent proxies deployed in cellular 
+or enterprise networks. 
 
 From an operational viewpoint, knowing that Multipath TCP can cope
 with various types of middlebox interference is important. However,
@@ -668,22 +738,14 @@ operators to check at which hop a particular field of the TCP header
 (including options) is modified. It has been used by several network
 operators to debug various middlebox interference problems. tracebox
 includes a scripting language that enables its user to specify
-precisely which packet is sent by the source. tracebox sends packets
+precisely which packet (including IP and TCP options) 
+is sent by the source. tracebox sends packets
 with an increasing TTL/HopLimit and compares the information returned
-in the ICMP messages with the packet that it sends. This enables
+in the ICMP messages with the packet that it sent. This enables
 tracebox to detect any interference caused by middleboxes on a given
 path. tracebox works better when routers implement the ICMP extension
 defined in {{RFC1812}}.
 
-A closer look at the packets received on the multipath-tcp.org server
-showed that among the 184 thousands Multipath TCP connections in the
-trace, we observed only 125 of them falling back to regular TCP, which
-happened with 28 different client IP addresses. These include 91 HTTP
-connections and 34 FTP connections. The FTP interference is expected
-and due to Application Level Gateways running on NAT boxes. The HTTP
-interference appeared only on the direction from server to client and
-could have been caused by transparent proxies deployed in cellular
-or enterprise networks. 
 
 Users of the Multipath TCP implementation have reported some
 experience with middlebox interference. The strangest scenario has
@@ -719,8 +781,7 @@ has been included in the Linux implementation of Multipath TCP
 is the BALIA scheme {{I-D.walid-mptcp-congestion-control}}.
 
 These different congestion control schemes have been compared in
-several articles. {{CONEXT13}} and {{PaaschPhD}} apply an experimental
-design approach to compare these algorithms in an emulated
+several articles. {{CONEXT13}} and {{PaaschPhD}} compare these algorithms in an emulated
 environment. The evaluation showed that the delay-based congestion
 control scheme is less able to efficiently use the available links
 than the three other schemes. Reports from some users indicate that
@@ -736,7 +797,7 @@ and the protocol specification {{RFC6824}} define the basic usage of
 the subflows and the protocol mechanisms that are required to create
 and terminate them. However, there are no guidelines on how subflows
 are used during the lifetime of a Multipath TCP session. Most of the
-experiments with Multipath TCP have been performed in controlled
+published experiments with Multipath TCP have been performed in controlled
 environments. Still, based on the experience running them and
 discussions on the mptcp-dev mailing list, interesting lessons have
 been learned about the management of these subflows.
@@ -782,7 +843,7 @@ the client, 6 subflows will be established. This may be excessive
 in some environments, in particular when the client and/or the server 
 have a large number of interfaces. A recent draft has proposed
 a Multipath TCP option to negotiate the maximum number
-of subflows . 
+of subflows. 
 However, it should be noted that there have been reports on the 
 mptcp-dev mailing indicating that users rely on Multipath TCP to 
 aggregate more than four different interfaces. Thus, there is a 
@@ -812,7 +873,7 @@ From an operational viewpoint, a network operator could want to
 create two subflows between the communicating hosts. From a bandwidth
 utilization viewpoint, the most natural paths are host1-switch1-host2 
 and host1-switch2-host2. However, a Multipath TCP implementation 
-running onthese two hosts may sometimes have difficulties to 
+running on these two hosts may sometimes have difficulties to 
 obtain this result.
 
 
@@ -853,7 +914,7 @@ source address, destination address and source or destination
 ports used for the new subflow. The ability to use different
 source and destination addresses is key to support multihomed
 servers and clients. The ability to use different destination
-port numbers is worth being discussed because it has operational
+port numbers is worth discussing because it has operational
 implications.
 
 
@@ -955,7 +1016,7 @@ the DATA_FIN with a subflow-FIN. This decision will be fatal, as the
 subflow's state machine will not transition from Close-Wait to
 Last-Ack, but rather go through Fin-Wait-2 into Time-Wait state.
 The Time-Wait state will consume resources on the host for at least
-2 MSL (Maximum Segment Lifetime). Thus, a smart application, that
+2 MSL (Maximum Segment Lifetime). Thus, a smart application that
 tries to avoid Time-Wait state by doing late closure of the
 connection actually ends up with one of its subflows in Time-Wait
 state. A high-performance Multipath TCP kernel implementation should
@@ -965,7 +1026,7 @@ subflows.
 
 The solution to this problem lies in an optimistic assumption that
 a host doing active-closure of a Multipath TCP connection by sending
-a DATA\_FIN will soon also send a FIN on all its in subflows. Thus,
+a DATA\_FIN will soon also send a FIN on all its subflows. Thus,
 the passive closer of the connection can simply wait for the peer to
 send exactly this FIN - enforcing passive closure even on the
 subflows. Of course, to avoid consuming resources indefinitely,
@@ -973,7 +1034,7 @@ a timer must limit the time our implementation waits for the FIN.
 
 
 Packet schedulers {#scheduler}
-=================
+-------------------------
 
 In a Multipath TCP implementation, the packet scheduler is the
 algorithm that is executed when transmitting each packet to decide
@@ -982,8 +1043,11 @@ itself does not have any impact on the interoperability of Multipath
 TCP implementations. However, it may clearly impact the performance
 of Multipath TCP sessions. The Multipath TCP implementation in the
 Linux kernel supports a pluggable architecture for the packet
-scheduler {{PaaschPhD}}. As of this writing, two schedules have
-been implemented: round-robin and lowest-rtt-first. They are compared
+scheduler {{PaaschPhD}}. As of this writing, two schedulers have
+been implemented: round-robin and lowest-rtt-first. The second
+scheduler relies on the round-trip-time (rtt) measured on each TCP
+subflow and sends first segments over the subflow having the lowest round-trip-time.
+They are compared
 in {{CSWS14}}. The experiments and measurements described in
 {{CSWS14}} show that the lowest-rtt-first scheduler appears to
 be the best compromise from a performance viewpoint.
@@ -998,12 +1062,12 @@ the optimal scheduling strategy depends on the characteristics of the
 paths being used."
 
 Segment size selection {#mss}
-======================
+------------------------
 
 When an application performs a write/send system call, the kernel 
 allocates a packet buffer (sk_buff in Linux) to store the data the 
 application wants to send. The kernel will store at most one MSS 
-(Maximum Segment Size) of data per buffer. As MSS can differ amongst 
+(Maximum Segment Size) of data per buffer. As the MSS can differ amongst 
 subflows, an MPTCP implementation must select carefully the MSS used 
 to generate application data. The Linux kernel implementation 
 had various ways of selecting the MSS: minimum or maximum amongst the 
@@ -1020,8 +1084,8 @@ smallest MSS. The latter segment will introduce a large overhead as
 for a single data segment 2 slots will be used in the congestion 
 window (in packets) therefore reducing by ~2 the potential throughput 
 (in bytes/s) of this subflow. Taking the smallest MSS does not solve 
-the issue as there might be a case where the sublow with the smallest 
-MSS will only participate marginally to the overall performance 
+the issue as there might be a case where the subflow with the smallest 
+MSS only sends a few packets
 therefore reducing the potential throughput of the other subflows. 
 
 The Linux implementation recently took another approach {{DetalMSS}}.
@@ -1037,7 +1101,7 @@ allows to achieve the highest potential throughput.
 
 
 Interactions with the Domain Name System {#cdn}
-========================================
+---------------------------------------
 
 Multihomed clients such as smartphones can send DNS
 queries over any of their interfaces. When a
@@ -1068,11 +1132,18 @@ networks and have contracts that specify that the CDN server will only
 be accessed from within this particular ISP. Assume now that both the
 client and the CDN servers support Multipath TCP. In this case, a
 Multipath TCP session from cdn1 or cdn2 would potentially use both
-the cellular network and the WiFi network. This would violate the
-contract between the CDN provider and the network operators. A
-possible solution to prevent this problem would be to modify the
+the cellular network and the WiFi network. Serving the client from
+cdn2 over the cellular interface could violate the
+contract between the CDN provider and the network operators. A similar
+problem occurs with regular TCP if the client caches DNS replies. From
+example the client obtains a DNS answer over the cellular interface
+and then stops this interface and starts to use its WiFi interface. If
+the client retrieves data from cdn1 over its WiFi interface, this may
+also violate the contract between the CDN and the network operators.
+
+A possible solution to prevent this problem would be to modify the
 DNS resolution on the client. The client subnet EDNS extension
-defined in {{I-D.vandergaast-edns-client-subnet}} could be used
+defined in {{I-D.ietf-dnsop-edns-client-subnet}} could be used
 for this purpose. When the client sends a DNS query from its WiFi
 interface, it should also send the client subnet corresponding to
 the cellular interface in this request. This would indicate to the
@@ -1080,10 +1151,8 @@ resolver that the answer should be valid for both the WiFi and the
 cellular interfaces (e.g., the cdn3 server).
 
 
-
-
 Captive portals {#wifi}
-===============
+------------
 
 Multipath TCP enables a host to use different interfaces to reach
 a server. In theory, this should ensure connectivity when at least
@@ -1141,6 +1210,8 @@ Phil Eardley and Jaehyun Hwang.
 Changelog
 ================
 
+This section should be removed before final publication
+
 - initial version : September 16th, 2014 : Added section {{mss}} that
   discusses some performance problems that appeared with the Linux
   implementation when using subflows having different MSS values
@@ -1156,3 +1227,8 @@ Changelog
     - Added some text on middleboxes in {{mbox}} 
     - Removed the discussion on SDN
     - Restructured text and improved writing in some parts
+
+- version ietf-03 : September 2015, answer to comments from Phil
+  Eardley
+
+   - 

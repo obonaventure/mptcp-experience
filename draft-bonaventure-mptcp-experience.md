@@ -22,8 +22,8 @@ author:
  -
   ins: C. Paasch
   name: Christoph Paasch
-  organization: UCLouvain
-  email: Christoph.Paasch@gmail.com
+  organization: Apple, Inc.
+  email: cpaasch@apple.com
  -
   ins: G. Detal
   name: Gregory Detal

@@ -215,7 +215,7 @@ informative:
    target: https://support.apple.com/en-us/HT201373
   FreeBSD-MPTCP:
    author:
-    - ins: . Williams
+    - ins: N. Williams
    title: Multipath TCP For FreeBSD Kernel Patch v0.5
    target:     http://caia.swin.edu.au/urp/newtcp/mptcp  
   INFOCOM14:
@@ -358,7 +358,7 @@ the following platforms :
 
 The first three implementations
 {{I-D.eardley-mptcp-implementations-survey}} are known to
-interoperate. The last twos are currently being tested and improved
+interoperate. The last two are currently being tested and improved
 against the Linux implementation. Three of these implementations are
 open-source. Apple's implementation is widely deployed.
 
@@ -372,7 +372,7 @@ Multipath TCP were identified {{RFC6182}}. Since then, other use cases
 have been proposed and some have been tested and even deployed. We
 describe these use cases in  {{usecases}}.
 
-The second part of the document focuses on the operational
+{{operexp}} focuses on the operational
 experience with Multipath TCP. Most of this experience
 comes from the utilisation of the Multipath TCP implementation
 in the Linux kernel {{MultipathTCP-Linux}}. This
@@ -385,7 +385,7 @@ This Multipath TCP implementation is actively maintained and
 continuously improved. It is used on various types of hosts,
 ranging from smartphones or embedded routers to high-end servers.
 
-The Multipath TCP implementation in the Linux kernel iis not,
+The Multipath TCP implementation in the Linux kernel is not,
 by far, the most widespread deployment of Multipath
 TCP. Since September 2013, Multipath TCP is also supported on
 smartphones and tablets running iOS7 {{IOS7}}. There are likely
@@ -395,7 +395,7 @@ used to support a single application. Unfortunately, there is
 no public information about the lessons learned from this large
 scale deployment.
 
-The second part of this is document is organized as follows.
+{{operexp}} is organized as follows.
 Supporting the middleboxes was one of the difficult issues in
 designing the Multipath TCP protocol. We explain in  {{mbox}}
 which types of middleboxes the Linux Kernel implementation of
@@ -415,7 +415,7 @@ Use cases {#usecases}
 
 Multipath TCP has been tested in several use cases. There is already
 an abundant scientific literature on Multipath TCP {{MPTCPBIB}}.
-Several of the papers published in the scientific litterature have
+Several of the papers published in the scientific literature have
 identified possible improvements that are worth being discussed here.
 
 Datacenters {#dc}
@@ -446,7 +446,7 @@ Although ECMP is widely used inside datacenters, this is not the only
 environment where there are different paths between a pair of hosts.
 ECMP and other load balancing techniques such as Link Aggregation
 Groups (LAG) are widely used
-in today's network and having multiple paths between a pair of
+in today's networks and having multiple paths between a pair of
 single-homed hosts is becoming the norm instead of the exception.
 Although these multiple paths have often the same cost (from an IGP
 metrics viewpoint), they do not necessarily have the same performance.
@@ -645,7 +645,7 @@ creates a normal TCP connection, it is intercepted by the Hybrid CPE
 (HPCE) that converts it in a Multipath TCP connection so that it
 can use the available access networks (DSL and LTE in the example).
 The Hybrid Access Gateway (HAG) does the opposite to ensure that the
-regular server see a normal TCP connection. Some of the solutions
+regular server sees a normal TCP connection. Some of the solutions
 that are currently discussed for hybrid networks use
 Multipath TCP on the HCPE and the HAG. Other solutions rely on
 tunnels between the HCPE and the
@@ -662,7 +662,7 @@ client --- HCPE ------ DSL ------- HAG --- internet --- server
 {: #fighybrid title="Hybrid Access Network"}
 
 
-Operational Experience
+Operational Experience {#operexp}
 ======================
 
 
@@ -771,7 +771,7 @@ control scheme is also an adaptation of the NewReno single path
 congestion control scheme to support multiple paths. Simulations and
 measurements have shown that it provides some performance benefits
 compared to the the default congestion control scheme
-{{CONEXT12}}. Measurement over a wide range of parameters reported in
+{{CONEXT12}}. Measurements over a wide range of parameters reported in
 {{CONEXT13}} also indicate some benefits with the OLIA congestion
 control scheme. Recently, a delay-based congestion control scheme has
 been ported to the Multipath TCP implementation in the Linux
@@ -1072,8 +1072,7 @@ subflows, an MPTCP implementation must select carefully the MSS used
 to generate application data. The Linux kernel implementation 
 had various ways of selecting the MSS: minimum or maximum amongst the 
 different subflows. However, these heuristics of MSS selection can
-cause significant 
-performances issues in some environment. Consider the following 
+cause significant performance issues in some environment. Consider the following 
 example. An MPTCP connection has two established subflows that 
 respectively use a MSS of 1420 and 1428 bytes. If MPTCP selects
 the maximum,
@@ -1082,7 +1081,7 @@ MPTCP implementation will have to split the segment in two (a
 1420-byte and 8-byte segments) when pushing on the subflow with the 
 smallest MSS. The latter segment will introduce a large overhead as 
 for a single data segment 2 slots will be used in the congestion 
-window (in packets) therefore reducing by ~2 the potential throughput 
+window (in packets) therefore reducing by roughly twice the potential throughput 
 (in bytes/s) of this subflow. Taking the smallest MSS does not solve 
 the issue as there might be a case where the subflow with the smallest 
 MSS only sends a few packets
@@ -1135,7 +1134,7 @@ Multipath TCP session from cdn1 or cdn2 would potentially use both
 the cellular network and the WiFi network. Serving the client from
 cdn2 over the cellular interface could violate the
 contract between the CDN provider and the network operators. A similar
-problem occurs with regular TCP if the client caches DNS replies. From
+problem occurs with regular TCP if the client caches DNS replies. For
 example the client obtains a DNS answer over the cellular interface
 and then stops this interface and starts to use its WiFi interface. If
 the client retrieves data from cdn1 over its WiFi interface, this may

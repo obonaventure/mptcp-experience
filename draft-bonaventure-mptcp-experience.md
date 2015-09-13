@@ -33,6 +33,7 @@ author:
 informative:
   RFC1812:
   RFC1928:
+  RFC4987:
   RFC6182:
   RFC6356:
   RFC6824:
@@ -45,6 +46,7 @@ informative:
   I-D.wei-mptcp-proxy-mechanism:
   I-D.hampel-mptcp-proxies-anchors:
   I-D.deng-mptcp-proxy:
+  I-D.paasch-mptcp-syncookies:
   MBTest:
     title: MBTest
     author:
@@ -1182,6 +1184,35 @@ WiFi interface to send its DNS request and create the first subflow.
 This is not optimal with Multipath TCP. A better approach would
 probably be to try a few attempts on the WiFi interface and then try
 to use the second interface for the initial subflow as well.
+
+
+Stateless webservers {#syncookies}
+--------------------
+
+MPTCP has been designed to interoperate with webservers that benefit from SYN-cookies
+to protect against SYN-flooding attacks {{RFC4987}}. MPTCP achieves this by
+echoing the keys negotiated during the MP_CAPABLE handshake in the third ACK of the 3-way handshake.
+Reception of this third ACK then allows the server to reconstruct the state
+specific to MPTCP.
+
+However, one caveat to this mechanism is the non-reliable nature of the third ACK.
+Indeed, when the third ACK gets lost, the server will not be able to reconstruct
+the MPTCP-state. MPTCP will fallback to regular TCP in this case.
+This is in contrast to regular TCP, as clients usually start the
+application's transaction by sending data to the server. This data-segment (that
+is sent reliably by TCP) enables stateless servers to create the TCP-related state,
+even in case the third ACK has been lost.
+
+This issue might be considered as a minor one for MPTCP. Losing the third ACK
+should only happen when packet loss is high. However, when packet-loss
+is high MPTCP provides a lot of benefits as it can move traffic away from the
+lossy link. It is undesirable that MPTCP has a higher chance to fall back to
+regular TCP in those lossy environments.
+
+{{I-D.paasch-mptcp-syncookies}} discusses this issue and suggests a modified
+handshake mechanism that ensures reliable delivery of the MP_CAPABLE, following
+the 3-way handshake. This modification will make MPTCP reliable, even in lossy
+environments when servers need to use SYN-cookies to protect against SYN-flooding attacks.
 
 
 Conclusion

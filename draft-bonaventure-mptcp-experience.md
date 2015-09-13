@@ -1227,7 +1227,7 @@ the 3-way handshake. This modification will make MPTCP reliable, even in lossy
 environments when servers need to use SYN-cookies to protect against SYN-flooding attacks.
 
 
-Loadbalanced serverfarms
+Loadbalanced serverfarms {#loadbalancer}
 ------------------------
 
 Large-scale serverfarms typically deploy thousands of servers behind a single
@@ -1300,4 +1300,9 @@ This section should be removed before final publication
 - version ietf-03 : September 2015, answer to comments from Phil
   Eardley
 
-   - 
+    - Improved introduction
+    - Added details about using SOCKS and Korea Telecom's use-case in {{proxy}}.
+    - Added issue around clients caching DNS-results in {{cdn}}
+    - Explained issue of MPTCP with stateless webservers {{syncookies}}
+    - Added description of MPTCP's use behind layer-4 loadbalancers {{loadbalancer}}
+    - Restructured text and improved writing in some parts

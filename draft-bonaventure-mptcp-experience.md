@@ -47,6 +47,7 @@ informative:
   I-D.hampel-mptcp-proxies-anchors:
   I-D.deng-mptcp-proxy:
   I-D.paasch-mptcp-syncookies:
+  I-D.paasch-mptcp-loadbalancer:
   MBTest:
     title: MBTest
     author:
@@ -318,6 +319,17 @@ informative:
     seriesinfo: Mobicom 2015 (Poster)
     date: Sept. 2015
     target: 
+  Presto08:
+    title: Towards a Next Generation Data Center Architecture -  Scalability and Commoditization
+    author:
+      - ins: A. Greenberg
+      - ins: P. Lahiri
+      - ins: D. Maltz
+      - ins: P. Parveen
+      - ins: S. Sengupta
+    seriesinfo: ACM PRESTO 2008
+    date: Aug. 2008
+    target: http://dl.acm.org/citation.cfm?id=1397732
   HotMiddlebox13b:
     title: Multipath in the Middle(Box)
     author:
@@ -1213,6 +1225,33 @@ regular TCP in those lossy environments.
 handshake mechanism that ensures reliable delivery of the MP_CAPABLE, following
 the 3-way handshake. This modification will make MPTCP reliable, even in lossy
 environments when servers need to use SYN-cookies to protect against SYN-flooding attacks.
+
+
+Loadbalanced serverfarms
+------------------------
+
+Large-scale serverfarms typically deploy thousands of servers behind a single
+virtual IP (VIP). Steering traffic to these servers is done through layer-4 loadbalancers
+that ensure that a TCP-flow will always be routed to the same server {{Presto08}}.
+
+As Multipath TCP uses multiple different TCP subflows to steer the traffic across
+the different paths, loadbalancers need to ensure that all these subflows are
+routed to the same server. This implies that the loadbalancers need to track
+the MPTCP-related state, allowing them to parse the token in the MP_JOIN and assign
+those subflows to the appropriate server. However, serverfarms typically deploy
+multiple of these loadbalancers for reliability and capacity reasons. As a
+TCP subflow might get routed to any of these loadbalancers, they
+would need to synchronize the MPTCP-related state - a solution that is not feasible
+at large scale.
+
+The token (carried in the MP_JOIN) contains the information indicating which
+MPTCP-session the subflow belongs to. As the token is a hash of the key, servers
+are not able to generate the token in such a way that the token can provide the
+necessary information to the loadbalancers which would allow them to
+route TCP subflows to the appropriate server. {{I-D.paasch-mptcp-loadbalancer}}
+discusses this issue in detail and suggests two alternative MP_CAPABLE handshakes
+to overcome these. As of September 2015, it is not yet clear how MPTCP might accomodate
+such use-case to enable its deployment within loadbalanced serverfarms.
 
 
 Conclusion

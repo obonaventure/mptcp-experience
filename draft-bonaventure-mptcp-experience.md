@@ -22,8 +22,8 @@ author:
  -
   ins: C. Paasch
   name: Christoph Paasch
-  organization: UCLouvain
-  email: Christoph.Paasch@gmail.com
+  organization: Apple, Inc.
+  email: cpaasch@apple.com
  -
   ins: G. Detal
   name: Gregory Detal
@@ -33,6 +33,7 @@ author:
 informative:
   RFC1812:
   RFC1928:
+  RFC4987:
   RFC6182:
   RFC6356:
   RFC6824:
@@ -45,6 +46,8 @@ informative:
   I-D.wei-mptcp-proxy-mechanism:
   I-D.hampel-mptcp-proxies-anchors:
   I-D.deng-mptcp-proxy:
+  I-D.paasch-mptcp-syncookies:
+  I-D.paasch-mptcp-loadbalancer:
   MBTest:
     title: MBTest
     author:
@@ -316,6 +319,17 @@ informative:
     seriesinfo: Mobicom 2015 (Poster)
     date: Sept. 2015
     target: 
+  Presto08:
+    title: Towards a Next Generation Data Center Architecture -  Scalability and Commoditization
+    author:
+      - ins: A. Greenberg
+      - ins: P. Lahiri
+      - ins: D. Maltz
+      - ins: P. Parveen
+      - ins: S. Sengupta
+    seriesinfo: ACM PRESTO 2008
+    date: Aug. 2008
+    target: http://dl.acm.org/citation.cfm?id=1397732
   HotMiddlebox13b:
     title: Multipath in the Middle(Box)
     author:
@@ -1184,6 +1198,62 @@ probably be to try a few attempts on the WiFi interface and then try
 to use the second interface for the initial subflow as well.
 
 
+Stateless webservers {#syncookies}
+--------------------
+
+MPTCP has been designed to interoperate with webservers that benefit from SYN-cookies
+to protect against SYN-flooding attacks {{RFC4987}}. MPTCP achieves this by
+echoing the keys negotiated during the MP_CAPABLE handshake in the third ACK of the 3-way handshake.
+Reception of this third ACK then allows the server to reconstruct the state
+specific to MPTCP.
+
+However, one caveat to this mechanism is the non-reliable nature of the third ACK.
+Indeed, when the third ACK gets lost, the server will not be able to reconstruct
+the MPTCP-state. MPTCP will fallback to regular TCP in this case.
+This is in contrast to regular TCP, as clients usually start the
+application's transaction by sending data to the server. This data-segment (that
+is sent reliably by TCP) enables stateless servers to create the TCP-related state,
+even in case the third ACK has been lost.
+
+This issue might be considered as a minor one for MPTCP. Losing the third ACK
+should only happen when packet loss is high. However, when packet-loss
+is high MPTCP provides a lot of benefits as it can move traffic away from the
+lossy link. It is undesirable that MPTCP has a higher chance to fall back to
+regular TCP in those lossy environments.
+
+{{I-D.paasch-mptcp-syncookies}} discusses this issue and suggests a modified
+handshake mechanism that ensures reliable delivery of the MP_CAPABLE, following
+the 3-way handshake. This modification will make MPTCP reliable, even in lossy
+environments when servers need to use SYN-cookies to protect against SYN-flooding attacks.
+
+
+Loadbalanced serverfarms {#loadbalancer}
+------------------------
+
+Large-scale serverfarms typically deploy thousands of servers behind a single
+virtual IP (VIP). Steering traffic to these servers is done through layer-4 loadbalancers
+that ensure that a TCP-flow will always be routed to the same server {{Presto08}}.
+
+As Multipath TCP uses multiple different TCP subflows to steer the traffic across
+the different paths, loadbalancers need to ensure that all these subflows are
+routed to the same server. This implies that the loadbalancers need to track
+the MPTCP-related state, allowing them to parse the token in the MP_JOIN and assign
+those subflows to the appropriate server. However, serverfarms typically deploy
+multiple of these loadbalancers for reliability and capacity reasons. As a
+TCP subflow might get routed to any of these loadbalancers, they
+would need to synchronize the MPTCP-related state - a solution that is not feasible
+at large scale.
+
+The token (carried in the MP_JOIN) contains the information indicating which
+MPTCP-session the subflow belongs to. As the token is a hash of the key, servers
+are not able to generate the token in such a way that the token can provide the
+necessary information to the loadbalancers which would allow them to
+route TCP subflows to the appropriate server. {{I-D.paasch-mptcp-loadbalancer}}
+discusses this issue in detail and suggests two alternative MP_CAPABLE handshakes
+to overcome these. As of September 2015, it is not yet clear how MPTCP might accomodate
+such use-case to enable its deployment within loadbalanced serverfarms.
+
+
 Conclusion
 ==========
 
@@ -1230,4 +1300,9 @@ This section should be removed before final publication
 - version ietf-03 : September 2015, answer to comments from Phil
   Eardley
 
-   - 
+    - Improved introduction
+    - Added details about using SOCKS and Korea Telecom's use-case in {{proxy}}.
+    - Added issue around clients caching DNS-results in {{cdn}}
+    - Explained issue of MPTCP with stateless webservers {{syncookies}}
+    - Added description of MPTCP's use behind layer-4 loadbalancers {{loadbalancer}}
+    - Restructured text and improved writing in some parts

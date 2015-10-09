@@ -1210,10 +1210,11 @@ specific to MPTCP.
 However, one caveat to this mechanism is the non-reliable nature of the third ACK.
 Indeed, when the third ACK gets lost, the server will not be able to reconstruct
 the MPTCP-state. MPTCP will fallback to regular TCP in this case.
-This is in contrast to regular TCP, as clients usually start the
-application's transaction by sending data to the server. This data-segment (that
-is sent reliably by TCP) enables stateless servers to create the TCP-related state,
-even in case the third ACK has been lost.
+This is in contrast to regular TCP. When the client starts sending data, the first
+data segment also includes the SYN-cookie, which allows the server to reconstruct
+the TCP-state. Further, this data segment will be retransmitted by the client
+in case it gets lost and thus is resilient against loss. MPTCP does not include
+the keys in this data segment and thus the server cannot reconstruct the MPTCP state.
 
 This issue might be considered as a minor one for MPTCP. Losing the third ACK
 should only happen when packet loss is high. However, when packet-loss

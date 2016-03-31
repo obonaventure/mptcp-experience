@@ -1,8 +1,8 @@
 ---
 title: Use Cases and Operational Experience with Multipath TCP
 abbrev: MPTCP Experience
-docname: draft-ietf-mptcp-experience-03
-date: 2015-10-19
+docname: draft-ietf-mptcp-experience-04
+date: 2016-04-01
 category: info
 
 ipr: trust200902
@@ -27,7 +27,7 @@ author:
  -
   ins: G. Detal
   name: Gregory Detal
-  organization: UCLouvain and Tessares
+  organization: Tessares
   email: Gregory.Detal@tessares.net
  
 informative:
@@ -345,7 +345,38 @@ informative:
       - ins: G. Fabregas (Ed)
     seriesinfo: Broadband Forum, contribution bbf2014.1139.04
     date: June 2015
- 
+  PAM2016:
+    title: A First Analysis of Multipath TCP on Smartphones
+    author:
+      - ins: Q. De Coninck
+      - ins: M. Baerts
+      - ins: B. Hesmans
+      - ins: O. Bonaventure
+    seriesinfo: 17th International Passive and Active Measurements Conference (PAM2016)
+    date: March 2016
+    target: http://inl.info.ucl.ac.be/publications/first-analysis-multipath-tcp-smartphones  
+  COMMAG2016:
+    title: Observing Real Smartphone Applications over Multipath TCP
+    author:
+      -	ins: Q. De Coninck
+      - ins: M. Baerts
+      - ins: B. Hesmans
+      - ins: O. Bonaventure
+    seriesinfo: IEEE Communications Magazine
+    date: March 2016
+    target: http://inl.info.ucl.ac.be/publications/observing-real-smartphone-applications-over-multipath-tcp
+  COMCOM2016:
+    title: Observing real Multipath TCP traffic
+    author:
+      -ins: V. Tran
+      -ins: Q. De Coninck
+      -ins: B. Hesmans
+      -ins: R. Sadre 
+      -ins: O. Bonaventure
+    seriesinfo: Computer Communications
+    date April 2016  
+    target: http://inl.info.ucl.ac.be/publications/observing-real-multipath-tcp-traffic
+
 --- abstract
 
 This document discusses both use cases and operational experience with
@@ -605,6 +636,20 @@ to first retransmit the previously transmitted data. As of this
 writing, this dynamic management of the subflows is not yet
 implemented in the Multipath TCP implementation in the Linux kernel.
 
+Some studies have started to analyse the performance of Multipath TCP on
+smartphone with real applications. In contrast with the bulk transfers
+that are used by many paper, real applications do not exchange huge amounts
+of data and establish a large number of small connections. {{COMMAG2016}}
+proposes a software testing framework that allows to automate Android 
+applications to study their interactions with Multipath TCP. 
+{{PAM2016}} analyses a one-month packet trace of all the packets exchanged
+by a dozen of smartphones used by regular users. This analysis reveals 
+that short connections and important on smartphones and that the main
+benefit of using Multipath TCP on smartphones is the ability to perform
+seamless handovers between different wireless networks. Long connections
+benefit from these handovers.
+
+
 Multipath TCP proxies {#proxy}
 ---------------------
 
@@ -643,7 +688,7 @@ Thanks to Multipath TCP, long-lived connections can be spread over the two
 available interfaces. However, for short-lived connections, most of the data
 is sent over the initial subflow that is created over the interface
 corresponding to the default route and the second subflow is almost
-not used.
+not used {{PAM2016}}.
 
 A second use case is when Multipath TCP is used by middleboxes, typically
 inside access networks. Various network operators are discussing and
@@ -740,7 +785,8 @@ connections and 34 FTP connections. The FTP interference is expected
 and due to Application Level Gateways running home routers. The HTTP 
 interference appeared only on the direction from server to client and 
 could have been caused by transparent proxies deployed in cellular 
-or enterprise networks. 
+or enterprise networks. A longer trace is discussed in {{COMCOM2016}} and
+similar conclusions about the middlebox interference are provided.
 
 From an operational viewpoint, knowing that Multipath TCP can cope
 with various types of middlebox interference is important. However,
@@ -1258,10 +1304,28 @@ Conclusion
 ==========
 
 In this document, we have documented a few years of experience
-with Multipath TCP. The information presented in this document
-was gathered from scientific publications and discussions with
-various users of the Multipath TCP implementation in the Linux
-kernel.
+with Multipath TCP. The different scientific publications that have
+been summarised confirm that Multipath TCP works well in different use
+cases in today's Internet. None of the cited publications has
+identified major issues with Multipath TCP and its utilisation in the
+current Internet. Some of these publications list directions for
+future improvements that mainly affect the subflow managers and
+packet schedulers. These heuristics affect the performance of 
+Multipath TCP, but not the protocol itself. It is likely that 
+these improvements will be discussed in future IETF documents. 
+
+Besides the published scientific literature, a number of companies
+have deployed Multipath TCP at large. One of these deployments
+uses Multipath TCP on the client and the server side, making it
+a true end-to-end deployment. This deployment uses Multipath TCP
+to support fast handover between cellular and WiFi networks. 
+A wider deployment of Multipath TCP on servers seems to be blocked by
+the necessity to support Multipath TCP on load balancers.
+Given the influence that middleboxes had on the design of Multipath TCP,
+it is interesting to note that the other industrial deployments use
+Multipath TCP inside middleboxes. These middelboxes use Multipath TCP
+to efficiently combine several access links while still interacting
+with legacy TCP servers. 
 
 
 Acknowledgements
@@ -1306,3 +1370,8 @@ This section should be removed before final publication
     - Explained issue of MPTCP with stateless webservers {{syncookies}}
     - Added description of MPTCP's use behind layer-4 loadbalancers {{loadbalancer}}
     - Restructured text and improved writing in some parts
+
+- version ietf-04 : April 2016, answer to last comments
+
+    - Updated text on measurements with smartphones
+    - Updated conclusion

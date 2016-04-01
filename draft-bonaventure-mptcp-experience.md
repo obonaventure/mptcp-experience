@@ -637,14 +637,14 @@ writing, this dynamic management of the subflows is not yet
 implemented in the Multipath TCP implementation in the Linux kernel.
 
 Some studies have started to analyse the performance of Multipath TCP on
-smartphone with real applications. In contrast with the bulk transfers
-that are used by many paper, real applications do not exchange huge amounts
+smartphones with real applications. In contrast with the bulk transfers
+that are used by many publications, real applications do not exchange huge amounts
 of data and establish a large number of small connections. {{COMMAG2016}}
 proposes a software testing framework that allows to automate Android 
 applications to study their interactions with Multipath TCP. 
 {{PAM2016}} analyses a one-month packet trace of all the packets exchanged
 by a dozen of smartphones used by regular users. This analysis reveals 
-that short connections and important on smartphones and that the main
+that short connections are important on smartphones and that the main
 benefit of using Multipath TCP on smartphones is the ability to perform
 seamless handovers between different wireless networks. Long connections
 benefit from these handovers.

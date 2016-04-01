@@ -376,7 +376,18 @@ informative:
     seriesinfo: Computer Communications
     date: April 2016
     target: http://inl.info.ucl.ac.be/publications/observing-real-multipath-tcp-traffic
-
+  CONEXT15:
+    title: SMAPP - Towards Smart Multipath TCP-enabled APPlications
+    author:  	 
+      - ins: B. Hesmans
+      - ins: G. Detal
+      - ins: S. Barre
+      - ins: R. Bauduin
+      - ins: O. Bonaventure
+    seriesinfo: Proc. Conext 2015, Heidelberg, Germany
+    date: December 2015
+    target: http://inl.info.ucl.ac.be/publications/smapp-towards-smart-multipath-tcp-enabled-applications
+   
 --- abstract
 
 This document discusses both use cases and operational experience with
@@ -963,6 +974,12 @@ This subflow manager creates N subflows between the same pair of IP
 addresses. The N subflows are created by the client and differ 
 only in the source port selected by the client. It was not
 designed to be used on multihomed hosts.
+
+A more flexible subflow manager has been proposed, implemented
+and evaluated in {{CONEXT15}}. This subflow manager exposes various
+kernel events to a user space daemon that decides when subflows
+need to be created and terminated based on various policies.
+
 
 Subflow destination port
 ------------------------

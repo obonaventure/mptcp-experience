@@ -358,7 +358,7 @@ informative:
   COMMAG2016:
     title: Observing Real Smartphone Applications over Multipath TCP
     author:
-      -	ins: Q. De Coninck
+      - ins: Q. De Coninck
       - ins: M. Baerts
       - ins: B. Hesmans
       - ins: O. Bonaventure
@@ -371,10 +371,10 @@ informative:
       -ins: V. Tran
       -ins: Q. De Coninck
       -ins: B. Hesmans
-      -ins: R. Sadre 
+      -ins: R. Sadre
       -ins: O. Bonaventure
     seriesinfo: Computer Communications
-    date April 2016  
+    date: April 2016
     target: http://inl.info.ucl.ac.be/publications/observing-real-multipath-tcp-traffic
 
 --- abstract

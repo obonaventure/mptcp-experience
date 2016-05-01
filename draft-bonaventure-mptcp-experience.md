@@ -401,10 +401,10 @@ helped to realize these use cases.
 Introduction
 ============
 
-Multipath TCP was standardized in {{RFC6824}} and five independant implementations
+Multipath TCP was standardized in {{RFC6824}} and five independent implementations
 have been developed {{I-D.eardley-mptcp-implementations-survey}}. As
 of September 2015, Multipath TCP has been or is being implemented on
-the following platforms :
+the following platforms:
 
  - Linux kernel {{MultipathTCP-Linux}} 
  - Apple iOS and MacOS {{Apple-MPTCP}}
@@ -457,7 +457,7 @@ designing the Multipath TCP protocol. We explain in  {{mbox}}
 which types of middleboxes the Linux Kernel implementation of
 Multipath TCP supports and how it reacts upon encountering
 these.  {{congestion}} summarises the MPTCP specific
-congestion controls that have been implemented.  {{pm}} and
+congestion controls that have been implemented.  {{pm}} to
 {{scheduler}} discuss heuristics and issues with respect to subflow
 management as well as the scheduling across the subflows. 
 {{mss}} explains some problems that occurred with subflows having
@@ -588,8 +588,8 @@ is characterised by a throughput drop while the cellular interface is
 brought up and the subflows are reestablished. 
 
 From a protocol viewpoint, {{Cellnet12}} discusses the problem posed
-by the unreliability of the ADD\_ADDR option and proposes a small
-protocol extension to allow hosts to reliably exchange this 
+by the unreliability of the REMOVE\_ADDR option and proposes a small
+protocol extension to allow hosts to reliably exchange this
 option. It would be useful to analyze packet traces to understand
 whether the unreliability of the REMOVE\_ADDR option poses an
 operational problem in real deployments.
@@ -598,9 +598,9 @@ Another study of the performance of Multipath TCP in wireless networks
 was reported  in {{IMC13b}}. This study uses laptops connected to
 various cellular ISPs and WiFi hotspots. It compares various file
 transfer scenarios. {{IMC13b}} observes that 4-path MPTCP
-outperforms 2-path MPTCP, especially for larger files. The comparison
-between LIA, OLIA and Reno does not reveal a significant performance
-difference for file sizes smaller than 4MB. 
+outperforms 2-path MPTCP, especially for larger files.
+However, for three congestion control algorithms (LIA, OLIA and Reno - see {{congestion}}),
+there is no significant performance difference for file sizes smaller than 4MB.
 
 A different study of the performance of Multipath TCP with two
 wireless networks is presented in {{INFOCOM14}}. In this study the
@@ -1072,7 +1072,7 @@ Sub: time-wait      |        subflow-ACK        |
                     |                           |
 
 ~~~~~~~~~~
-{: #figtimewait title="Multipath TCP may not be able to avoid time-wait state (even if enforced by the application)."}
+{: #figtimewait title="Multipath TCP may not be able to avoid time-wait state on the subflow (indicated as "Sub" in the drawing), even if enforced by the application on the client-side."}
 
 
 {{figtimewait}} shows a very particular issue within Multipath TCP.

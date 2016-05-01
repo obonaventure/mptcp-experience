@@ -37,6 +37,7 @@ informative:
   RFC6182:
   RFC6356:
   RFC6824:
+  RFC7430:
   I-D.ietf-dnsop-edns-client-subnet:
   I-D.eardley-mptcp-implementations-survey:
   I-D.walid-mptcp-congestion-control:
@@ -1355,6 +1356,17 @@ would like to thank all the implementers and users of the Multipath
 TCP implementation in the Linux kernel. This document has
 benefited from the comments of John Ronan, Yoshifumi Nishida,
 Phil Eardley and Jaehyun Hwang. 
+
+
+Security Considerations
+=======================
+
+
+This informational document discusses use-cases and operational experience with
+Multipath TCP. An extensive analysis of the remaining security issues in the
+Multipath TCP specification has been published in {{RFC7430}}, together with
+suggestions for possible solutions.
+
 
 --- back
 

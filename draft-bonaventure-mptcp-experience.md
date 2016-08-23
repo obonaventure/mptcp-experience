@@ -39,17 +39,29 @@ informative:
   RFC6356:
   RFC6824:
   RFC7430:
-  I-D.ietf-dnsop-edns-client-subnet:
-  I-D.eardley-mptcp-implementations-survey:
-  I-D.walid-mptcp-congestion-control:
+  RFC7871:
   I-D.lhwxz-gre-notifications-hybrid-access:
   I-D.boucadair-mptcp-max-subflow:
   I-D.lhwxz-hybrid-access-network-architecture:
-  I-D.wei-mptcp-proxy-mechanism:
-  I-D.hampel-mptcp-proxies-anchors:
-  I-D.deng-mptcp-proxy:
   I-D.paasch-mptcp-syncookies:
   I-D.paasch-mptcp-loadbalancer:
+  HAMPEL:
+    title: Seamless TCP mobility using lightweight MPTCP proxy
+    author:
+      - ins: G. Hampel
+      - ins: A. Rana
+      - ins: T. Klein
+    date: 2013
+    seriesinfo: Proceedings of the 11th ACM international symposium on Mobility management and wireless access (MobiWac '13). 
+  BALIA:
+    title: Multipath TCP Analysis, Design, and Implementation
+    author:
+       - ins: Q. Peng
+       - ins: A. Walid
+       - ins: J. Hwang
+       - ins: S. Low
+    date: 2016
+    seriesinfo: IEEE/ACM Trans. on Networking, Vol. 24, No. 1
   MBTest:
     title: MBTest
     author:
@@ -84,7 +96,7 @@ informative:
     seriesinfo: CoNEXT workshop HotMiddlebox
     date: 2013-12
     target: http://inl.info.ucl.ac.be/publications/are-tcp-extensions-middlebox-proof
-  HotNets:  
+  HotNets:
     title: Data center networking with multipath TCP
     author:
       - ins: C. Raiciu
@@ -151,7 +163,7 @@ informative:
       - ins: C. Paasch
       - ins: G. Detal
       - ins: F. Duchene
-      - ins: C. Raiciu	
+      - ins: C. Raiciu  
       - ins: O. Bonaventure 
     title: Exploring Mobile/WiFi Handover with Multipath TCP
     seriesinfo: ACM SIGCOMM workshop on Cellular Networks (Cellnet12)
@@ -197,7 +209,7 @@ informative:
       - ins: C. Raiciu
       - ins: C. Paasch
       - ins: S. Barre
-      - ins: A. Ford	
+      - ins: A. Ford    
       - ins: M. Honda
       - ins: F. Duchene
       - ins: O. Bonaventure
@@ -245,7 +257,7 @@ informative:
     seriesinfo: Proceedings of the ACM SIGCOMM 2011 conference 
     target: http://doi.acm.org/10.1145/2018436.2018467 
   PAMS2014:
-    author:	
+    author:     
       - ins: B. Arzani
       - ins: A. Gurney
       - ins: S. Cheng
@@ -404,7 +416,7 @@ Introduction
 ============
 
 Multipath TCP was standardized in {{RFC6824}} and five independent implementations
-have been developed {{I-D.eardley-mptcp-implementations-survey}}. As
+have been developed. As
 of September 2015, Multipath TCP has been or is being implemented on
 the following platforms:
 
@@ -414,8 +426,7 @@ the following platforms:
  - FreeBSD {{FreeBSD-MPTCP}}
  - Oracle
 
-The first three implementations
-{{I-D.eardley-mptcp-implementations-survey}} are known to
+The first three implementations are known to
 interoperate. The last two are currently being tested and improved
 against the Linux implementation. Three of these implementations are
 open-source. Apple's implementation is widely deployed.
@@ -568,7 +579,7 @@ MP\_PRIO option to explore two other modes of operation.
 
 In the backup mode, Multipath TCP opens a TCP subflow over each
 interface, but the cellular interface is configured in backup mode.
-This implies that data only flows over only the WiFi interface when both
+This implies that data flows over only the WiFi interface when both
 interfaces are considered to be active. If the WiFi interface fails,
 then the traffic switches quickly to the cellular interface, ensuring
 a smooth handover from the user's viewpoint {{Cellnet12}}. The cost of
@@ -668,7 +679,7 @@ Multipath TCP proxies {#proxy}
 
 As Multipath TCP is not yet widely deployed on both clients and servers,
 several deployments have used various forms of proxies. Two families
-of solutions are currently being used or tested {{I-D.deng-mptcp-proxy}}. 
+of solutions are currently being used or tested. 
 
 A first use case is when a Multipath TCP enabled client wants to use
 several interfaces to reach a regular TCP server. A typical use case
@@ -679,8 +690,8 @@ server would enable the smartphone to use Multipath TCP to access
 regular web servers. Obviously, this solution only works for applications
 that rely on HTTP. Another possibility is to use a proxy that can
 convert any Multipath TCP connection into a regular TCP connection.
-Multipath TCP-specific proxies have been proposed {{I-D.wei-mptcp-proxy-mechanism}} 
-{{HotMiddlebox13b}} {{I-D.hampel-mptcp-proxies-anchors}}. 
+Multipath TCP-specific proxies have been proposed 
+{{HotMiddlebox13b}} {{HAMPEL}}. 
 
 Another possibility leverages the SOCKS protocol {{RFC1928}}. SOCKS
 is often used in enterprise networks to allow clients to reach
@@ -761,23 +772,24 @@ has been designed to cope with middleboxes that :
 These middlebox interferences have all been included in the MBtest
 suite {{MBTest}}. This test suite is used in {{HotMiddlebox13}}
 to verify the reaction of the Multipath TCP implementation in the
-Linux kernel when faced with middlebox interference.  The test
+Linux kernel {{MultipathTCP-Linux}} when faced with middlebox
+interference.  The test
 environment used for this evaluation is a dual-homed client connected
 to a single-homed server. The middlebox behavior can be activated on
 any of the paths. The main results of this analysis are :
 
- - the Multipath TCP implementation in the Linux kernel is not
+ - the v0.87 Multipath TCP implementation in the Linux kernel is not
 affected by a middlebox that performs NAT or modifies TCP sequence numbers
  - when a middlebox removes the MP_CAPABLE option from the initial
-SYN segment, the Multipath TCP implementation in the Linux kernel
+SYN segment, the v0.87 Multipath TCP implementation in the Linux kernel
 falls back correctly to regular TCP
  - when a middlebox removes the DSS option from all data segments, the
-Multipath TCP implementation in the Linux kernel falls back correctly
+v0.87 Multipath TCP implementation in the Linux kernel falls back correctly
 to regular TCP
- - when a middlebox performs segment coalescing, the Multipath TCP
+ - when a middlebox performs segment coalescing, the v0.87 Multipath TCP
 implementation in the Linux kernel is still able to accurately extract
 the data corresponding to the indicated mapping
- - when a middlebox performs segment splitting, the Multipath TCP
+ - when a middlebox performs segment splitting, the v0.87 Multipath TCP
 implementation in the Linux kernel correctly reassembles the data
 corresponding to the indicated mapping. {{HotMiddlebox13}} shows on
 figure 4 in section 3.3
@@ -809,16 +821,10 @@ occurs. The tracebox software {{tracebox}} described in {{IMC13a}} is
 an extension of the popular traceroute software that enables network
 operators to check at which hop a particular field of the TCP header
 (including options) is modified. It has been used by several network
-operators to debug various middlebox interference problems. tracebox
-includes a scripting language that enables its user to specify
-precisely which packet (including IP and TCP options) 
-is sent by the source. tracebox sends packets
-with an increasing TTL/HopLimit and compares the information returned
-in the ICMP messages with the packet that it sent. This enables
-tracebox to detect any interference caused by middleboxes on a given
-path. tracebox works better when routers implement the ICMP extension
-defined in {{RFC1812}}.
-
+operators to debug various middlebox interference problems.
+Experience with tracebox indicates that supporting the ICMP
+extension defined in {{RFC1812}} makes it easier to debug
+middlebox problems in IPv4 networks. 
 
 Users of the Multipath TCP implementation have reported some
 experience with middlebox interference. The strangest scenario has
@@ -830,9 +836,10 @@ fallback to regular TCP without any impact on the application.
 Congestion control {#congestion}
 ------------------
 
-Congestion control has been an important problem for Multipath
+Congestion control has been an important challenge for Multipath
 TCP. The standardised congestion control scheme for Multipath TCP is
-defined in {{RFC6356}} and {{NSDI11}}. This congestion control scheme
+defined in {{RFC6356}}. A detailed description of this
+algorithm is provided in {{NSDI11}}. This congestion control scheme
 has been implemented in the Linux implementation of Multipath
 TCP. Linux uses a modular architecture to support various congestion
 control schemes. This architecture is applicable for both regular TCP
@@ -851,7 +858,8 @@ been ported to the Multipath TCP implementation in the Linux
 kernel. This congestion control scheme has been evaluated by using
 simulations in {{ICNP12}}. The fourth congestion control scheme that
 has been included in the Linux implementation of Multipath TCP
-is the BALIA scheme {{I-D.walid-mptcp-congestion-control}}.
+is the BALIA scheme that provides a better balance
+between TCP friendliness, responsiveness, and window oscillation {{BALIA}}.
 
 These different congestion control schemes have been compared in
 several articles. {{CONEXT13}} and {{PaaschPhD}} compare these algorithms in an emulated
@@ -879,7 +887,7 @@ been learned about the management of these subflows.
 From a subflow viewpoint, the Multipath TCP protocol is completely
 symmetrical. Both the clients and the server have the capability 
 to create subflows. However in practice the existing Multipath TCP
-implementations {{I-D.eardley-mptcp-implementations-survey}} have
+implementations have
 opted for a strategy where only the client creates new subflows. 
 The main motivation for this strategy is that often the client 
 resides behind a NAT or a firewall, preventing passive subflow 
@@ -1074,7 +1082,7 @@ Sub: time-wait      |        subflow-ACK        |
                     |                           |
 
 ~~~~~~~~~~
-{: #figtimewait title="Multipath TCP may not be able to avoid time-wait state on the subflow (indicated as "Sub" in the drawing), even if enforced by the application on the client-side."}
+{: #figtimewait title="Multipath TCP may not be able to avoid time-wait state on the subflow (indicated as Sub in the drawing), even if enforced by the application on the client-side."}
 
 
 {{figtimewait}} shows a very particular issue within Multipath TCP.
@@ -1221,7 +1229,7 @@ also violate the contract between the CDN and the network operators.
 
 A possible solution to prevent this problem would be to modify the
 DNS resolution on the client. The client subnet EDNS extension
-defined in {{I-D.ietf-dnsop-edns-client-subnet}} could be used
+defined in {{RFC7871}} could be used
 for this purpose. When the client sends a DNS query from its WiFi
 interface, it should also send the client subnet corresponding to
 the cellular interface in this request. This would indicate to the
@@ -1333,34 +1341,6 @@ in {{RFC6181}}, {{RFC6182}}, {{RFC6824}} and {{RFC7430}}.
 
 
 
-Conclusion
-==========
-
-In this document, we have documented a few years of experience
-with Multipath TCP. The different scientific publications that have
-been summarised confirm that Multipath TCP works well in different use
-cases in today's Internet. None of the cited publications has
-identified major issues with Multipath TCP and its utilisation in the
-current Internet. Some of these publications list directions for
-future improvements that mainly affect the subflow managers and
-packet schedulers. These heuristics affect the performance of 
-Multipath TCP, but not the protocol itself. It is likely that 
-these improvements will be discussed in future IETF documents. 
-
-Besides the published scientific literature, a number of companies
-have deployed Multipath TCP at large. One of these deployments
-uses Multipath TCP on the client and the server side, making it
-a true end-to-end deployment. This deployment uses Multipath TCP
-to support fast handover between cellular and WiFi networks. 
-A wider deployment of Multipath TCP on servers seems to be blocked by
-the necessity to support Multipath TCP on load balancers.
-Given the influence that middleboxes had on the design of Multipath TCP,
-it is interesting to note that the other industrial deployments use
-Multipath TCP inside middleboxes. These middelboxes use Multipath TCP
-to efficiently combine several access links while still interacting
-with legacy TCP servers. 
-
-
 Acknowledgements
 ================
 
@@ -1408,3 +1388,8 @@ This section should be removed before final publication
 
     - Updated text on measurements with smartphones
     - Updated conclusion
+
+- version ietf-06 : August 2016, answer to AD's review
+
+    - removed some expired drafts
+    - removed conclusion

@@ -1349,7 +1349,7 @@ This work was partially supported by the FP7-Trilogy2 project. We
 would like to thank all the implementers and users of the Multipath
 TCP implementation in the Linux kernel. This document has
 benefited from the comments of John Ronan, Yoshifumi Nishida,
-Phil Eardley and Jaehyun Hwang. 
+Phil Eardley, Jaehyun Hwang and Mirja Kuehlewind.
 
 --- back
 

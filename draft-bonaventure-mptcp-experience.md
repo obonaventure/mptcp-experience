@@ -579,7 +579,7 @@ MP\_PRIO option to explore two other modes of operation.
 
 In the backup mode, Multipath TCP opens a TCP subflow over each
 interface, but the cellular interface is configured in backup mode.
-This implies that data flows over only the WiFi interface when both
+This implies that data flows only over the WiFi interface when both
 interfaces are considered to be active. If the WiFi interface fails,
 then the traffic switches quickly to the cellular interface, ensuring
 a smooth handover from the user's viewpoint {{Cellnet12}}. The cost of

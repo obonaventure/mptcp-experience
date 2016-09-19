@@ -806,7 +806,7 @@ A closer look at the packets received on the multipath-tcp.org server
 only 125 of them were falling back to regular TCP. These connections
 originated from 28 different client IP addresses. These include 91 HTTP 
 connections and 34 FTP connections. The FTP interference is expected 
-and due to Application Level Gateways running home routers. The HTTP 
+and due to Application Level Gateways running in home routers. The HTTP 
 interference appeared only on the direction from server to client and 
 could have been caused by transparent proxies deployed in cellular 
 or enterprise networks. A longer trace is discussed in {{COMCOM2016}} and

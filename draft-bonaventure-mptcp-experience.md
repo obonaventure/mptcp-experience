@@ -457,7 +457,7 @@ ranging from smartphones or embedded routers to high-end servers.
 The Multipath TCP implementation in the Linux kernel is not,
 by far, the most widespread deployment of Multipath
 TCP. Since September 2013, Multipath TCP is also supported on
-smartphones and tablets running iOS7 {{IOS7}}. There are likely
+smartphones and tablets since iOS7 {{IOS7}}. There are likely
 hundreds of millions of Multipath TCP enabled devices. However,
 this particular Multipath TCP implementation is currently only
 used to support a single application. Unfortunately, there is
@@ -621,8 +621,7 @@ two networks had different qualities : a good network and a lossy
 network. When using two paths with different packet loss ratios, the
 Multipath TCP congestion control scheme moves traffic away from the
 lossy link that is considered to be congested. However, {{INFOCOM14}}
-documents an interesting scenario that is summarised in 
-{{figsimple}}.
+documents an interesting scenario that is summarised hereafter.
 
 
 ~~~~~~~~~~
@@ -634,7 +633,7 @@ client ----------- path1 -------- server
 ~~~~~~~~~~
 {: #figsimple title="Simple network topology"}
 
-Initially, the two paths have the same quality and Multipath TCP
+Initially, the two paths in {{figsimple}} have the same quality and Multipath TCP
 distributes the load over both of them. During the transfer, the
 second path becomes lossy, e.g. because the client moves. Multipath
 TCP detects the packet losses and they are retransmitted over the
@@ -662,7 +661,7 @@ implemented in the Multipath TCP implementation in the Linux kernel.
 
 Some studies have started to analyse the performance of Multipath TCP on
 smartphones with real applications. In contrast with the bulk transfers
-that are used by many publications, real applications do not exchange huge amounts
+that are used by many publications, many real applications do not exchange huge amounts
 of data and establish a large number of small connections. {{COMMAG2016}}
 proposes a software testing framework that allows to automate Android 
 applications to study their interactions with Multipath TCP. 

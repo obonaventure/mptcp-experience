@@ -421,7 +421,7 @@ of September 2015, Multipath TCP has been or is being implemented on
 the following platforms:
 
  - Linux kernel {{MultipathTCP-Linux}} 
- - Apple iOS and MacOS {{Apple-MPTCP}}
+ - Apple iOS and macOS {{Apple-MPTCP}}
  - Citrix load balancers
  - FreeBSD {{FreeBSD-MPTCP}}
  - Oracle
@@ -429,7 +429,8 @@ the following platforms:
 The first three implementations are known to
 interoperate. The last two are currently being tested and improved
 against the Linux implementation. Three of these implementations are
-open-source. Apple's implementation is widely deployed.
+open-source (Linux kernel, FreeBSD and Apple's iOS and macOS implementation).
+Apple's implementation is widely deployed.
 
 Since the publication of {{RFC6824}}, experience has been
 gathered by various  network researchers and users about the
@@ -777,7 +778,7 @@ environment used for this evaluation is a dual-homed client connected
 to a single-homed server. The middlebox behavior can be activated on
 any of the paths. The main results of this analysis are :
 
- - the v0.87 Multipath TCP implementation in the Linux kernel is not
+ - the version 0.87 of the Multipath TCP implementation in the Linux kernel, is not
 affected by a middlebox that performs NAT or modifies TCP sequence numbers
  - when a middlebox removes the MP_CAPABLE option from the initial
 SYN segment, the v0.87 Multipath TCP implementation in the Linux kernel
@@ -849,7 +850,7 @@ second congestion control scheme is OLIA {{CONEXT12}}. This congestion
 control scheme is also an adaptation of the NewReno single path
 congestion control scheme to support multiple paths. Simulations and
 measurements have shown that it provides some performance benefits
-compared to the the default congestion control scheme
+compared to the default congestion control scheme
 {{CONEXT12}}. Measurements over a wide range of parameters reported in
 {{CONEXT13}} also indicate some benefits with the OLIA congestion
 control scheme. Recently, a delay-based congestion control scheme has
@@ -864,8 +865,7 @@ These different congestion control schemes have been compared in
 several articles. {{CONEXT13}} and {{PaaschPhD}} compare these algorithms in an emulated
 environment. The evaluation showed that the delay-based congestion
 control scheme is less able to efficiently use the available links
-than the three other schemes. Reports from some users indicate that
-they seem to favor OLIA.
+than the three other schemes.
  
 
 Subflow management {#pm}
@@ -1192,7 +1192,7 @@ Multihomed clients such as smartphones can send DNS
 queries over any of their interfaces. When a
 single-homed client performs a DNS query, it receives from its local
 resolver the best answer for its request. If the client is
-multihomed, the answer returned to the DNS query may vary with
+multihomed, the answer in response to the DNS query may vary with
 the interface over which it has been sent.
 
 ~~~~~~~~~~
@@ -1266,8 +1266,8 @@ preferred over the cellular interface. If the smartphone learns a
 default route via both interfaces, it will typically prefer to use the
 WiFi interface to send its DNS request and create the first subflow.
 This is not optimal with Multipath TCP. A better approach would
-probably be to try a few attempts on the WiFi interface and then try
-to use the second interface for the initial subflow as well.
+probably be to try a few attempts on the WiFi interface and then, upon failure of these attempts,
+try to use the second interface for the initial subflow as well.
 
 
 Stateless webservers {#syncookies}
@@ -1323,7 +1323,7 @@ are not able to generate the token in such a way that the token can provide the
 necessary information to the loadbalancers which would allow them to
 route TCP subflows to the appropriate server. {{I-D.paasch-mptcp-loadbalancer}}
 discusses this issue in detail and suggests two alternative MP_CAPABLE handshakes
-to overcome these. As of September 2015, it is not yet clear how MPTCP might accomodate
+to overcome these. As of September 2015, it is not yet clear how MPTCP might accommodate
 such use-case to enable its deployment within loadbalanced serverfarms.
 
 IANA Considerations

@@ -2,7 +2,7 @@
 title: Use Cases and Operational Experience with Multipath TCP
 abbrev: MPTCP Experience
 docname: draft-ietf-mptcp-experience-06
-date: 2016-8-29
+date: 2016-9-20
 category: info
 
 ipr: trust200902
@@ -30,15 +30,16 @@ author:
   organization: Tessares
   email: Gregory.Detal@tessares.net
 
+normative:
+  RFC6181:
+  RFC6824:
 informative:
   RFC1812:
   RFC1928:
   RFC2992:
   RFC4987:
-  RFC6181:
   RFC6182:
   RFC6356:
-  RFC6824:
   RFC7430:
   RFC7871:
   I-D.lhwxz-gre-notifications-hybrid-access:
@@ -417,8 +418,14 @@ informative:
     seriesinfo: Proc. Blackhat Briefings
     date: 2014
     target: http://www.blackhat.com/docs/us-14/materials/us-14-Pearce-Multipath-TCP-Breaking-Todays-Networks-With-Tomorrows-Protocols-WP.pdf
-    
-
+  SOCKET:
+    title: An Enhanced Socket API for Multipath TCP	
+    author:
+       - ins: B. Hesmans
+       - ins: O. Bonaventure
+    seriesinfo: Proceedings of the 2016 Applied Networking Research Workshop
+    target: http://doi.acm.org/10.1145/2959424.2959433     
+    date: July 2016
    
 --- abstract
 
@@ -433,16 +440,16 @@ helped to realize these use cases.
 Introduction
 ============
 
-Multipath TCP was standardized in {{RFC6824}} and five independent implementations
+Multipath TCP was specified in {{RFC6824}} and five independent implementations
 have been developed. As
-of September 2015, Multipath TCP has been or is being implemented on
+of September 2016, Multipath TCP has been or is being implemented on
 the following platforms:
 
  - Linux kernel {{MultipathTCP-Linux}} 
  - Apple iOS and macOS {{Apple-MPTCP}}
  - Citrix load balancers
  - FreeBSD {{FreeBSD-MPTCP}}
- - Oracle
+ - Oracle Solaris
 
 The first three implementations are known to
 interoperate. The last two are currently being tested and improved
@@ -479,9 +486,9 @@ TCP. Since September 2013, Multipath TCP is also supported on
 smartphones and tablets since iOS7 {{IOS7}}. There are likely
 hundreds of millions of Multipath TCP enabled devices. However,
 this particular Multipath TCP implementation is currently only
-used to support a single application. Unfortunately, there is
-no public information about the lessons learned from this large
-scale deployment.
+used to support the Siri voice recognition/control 
+application. Unfortunately, there is no public information 
+about the lessons learned from this large scale deployment.
 
 {{operexp}} is organized as follows.
 Supporting the middleboxes was one of the difficult issues in
@@ -1052,8 +1059,10 @@ ports to reach the server. This suggestion seems mainly motivated
 by traffic shaping middleboxes that are used in some wireless
 networks. In networks where different shaping rates are associated
 to different destination port numbers, this could allow Multipath
-TCP to reach a higher performance. As of this writing, we are not
-aware of any implementation of this kind of tweaking.
+TCP to reach a higher performance. This behaviour valid according
+to the Multipath TCP specificiation {{RFC6824}}. The proposed
+APIs for Multipath TCP could enable application developers to
+perform such twekaing. 
 
 However, from an implementation point-of-view supporting different
 destination ports for the same Multipath TCP connection can cause
@@ -1353,8 +1362,10 @@ There are no IANA considerations in this informational document.
 Security Considerations
 =======================
 
-The security considerations for Multipath TCP have already been documented
-in {{RFC6181}}, {{RFC6182}}, {{RFC6824}} and {{RFC7430}}.
+This informational document discusses use-cases and operational experience with
+Multipath TCP. An extensive analysis of the remaining security issues in the
+Multipath TCP specification has been published in {{RFC7430}}, together with
+suggestions for possible solutions.
 
 From a security viewpoint, it is important to note that Multipath TCP, like 
 other multipath solutions such as SCTP, has the ability to send packets
@@ -1422,16 +1433,6 @@ benefited from the comments of John Ronan, Yoshifumi Nishida,
 Phil Eardley, Jaehyun Hwang and Mirja Kuehlewind.
 
 
-Security Considerations
-=======================
-
-
-This informational document discusses use-cases and operational experience with
-Multipath TCP. An extensive analysis of the remaining security issues in the
-Multipath TCP specification has been published in {{RFC7430}}, together with
-suggestions for possible solutions.
-
-
 --- back
 
 Changelog
@@ -1474,3 +1475,9 @@ This section should be removed before final publication
 
     - removed some expired drafts
     - removed conclusion
+
+- version ietf-07 : September 2016, answer to IESG comments
+
+    - small nits
+    - added more information in the security considerations as
+      suggested by Stephen Farrel

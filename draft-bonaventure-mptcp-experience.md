@@ -1,8 +1,8 @@
 ---
 title: Use Cases and Operational Experience with Multipath TCP
 abbrev: MPTCP Experience
-docname: draft-ietf-mptcp-experience-05
-date: 2016-7-8
+docname: draft-ietf-mptcp-experience-06
+date: 2016-8-29
 category: info
 
 ipr: trust200902
@@ -15,24 +15,25 @@ pi: [toc, sortrefs, symrefs]
 
 author:
  -
-  ins: O. Bonaventure
   name: Olivier Bonaventure
+  ins: O. Bonaventure
   organization: UCLouvain
   email: Olivier.Bonaventure@uclouvain.be
  -
-  ins: C. Paasch
   name: Christoph Paasch
+  ins: C. Paasch
   organization: Apple, Inc.
   email: cpaasch@apple.com
  -
-  ins: G. Detal
   name: Gregory Detal
+  ins: G. Detal
   organization: Tessares
   email: Gregory.Detal@tessares.net
 
 informative:
   RFC1812:
   RFC1928:
+  RFC2992:
   RFC4987:
   RFC6181:
   RFC6182:
@@ -401,6 +402,23 @@ informative:
     seriesinfo: Proc. Conext 2015, Heidelberg, Germany
     date: December 2015
     target: http://inl.info.ucl.ac.be/publications/smapp-towards-smart-multipath-tcp-enabled-applications
+  PZ15:
+    author:
+       - ins: C. Pearce 
+       - ins: S. Zeadally 
+    title: Ancillary Impacts of Multipath TCP on Current and Future Network Security
+    seriesinfo: IEEE Internet Computing, vol. 19, no. 5, pp. 58-65
+    date: 2015
+  PT14:
+    author:
+       - ins: C. Pearce 
+       - ins: P. Thomas 
+    title: Multipath TCP Breaking Today's Networks with Tomorrow's Protocols
+    seriesinfo: Proc. Blackhat Briefings
+    date: 2014
+    target: http://www.blackhat.com/docs/us-14/materials/us-14-Pearce-Multipath-TCP-Breaking-Todays-Networks-With-Tomorrows-Protocols-WP.pdf
+    
+
    
 --- abstract
 
@@ -1338,6 +1356,59 @@ Security Considerations
 
 The security considerations for Multipath TCP have already been documented
 in {{RFC6181}}, {{RFC6182}}, {{RFC6824}} and {{RFC7430}}.
+
+From a security viewpoint, it is important to note that Multipath TCP, like 
+other multipath solutions such as SCTP, has the ability to send packets
+belonging to a single connection over different paths. This design feature
+of Multipath TCP implies that middleboxes that have been deployed on-path
+assuming that they would observe all the packets exchanged for a given
+connection in both directions may not function correctly anymore. A typical
+example are firewalls, IDS or DPIs deployed in enterprise networks. Those
+devices expect to observe all the packets from all TCP connections.
+With Multipath TCP, those middleboxes
+may not observe anymore all packets since some of them may follow a
+different path. The two examples below illustrate typical deployments of
+such middleboxes. The first example, {{figphonembox}}, shows a Multipath TCP
+enabled smartphone attached to both an enterprise and a cellular
+network. If a Multipath TCP connection is established by the smartphone
+towards a server, some of the packets sent by the smartphone or the
+server may be transmitted over the cellular network and thus be
+invisible for the enterprise middlebox. 
+
+~~~~~~~~~~
+
+  smartphone +----- entreprise net --- MBox----+------ server
+             |                                 |
+             +----- cellular net  -------------+ 
+
+~~~~~~~~~~
+{: #figphonembox title="Enteprise Middlebox may not observe all packets from multihomed host"}
+
+The second example, {{figcsmbox}}, shows a possible issue when multiple middleboxes
+are deployed inside a network. For simplicity, we assume that network1 is the default
+IPv4 path while network2 is the default IPv6 path. A similar issue could occur with
+per-flow load balancing such as ECMP {{RFC2992}}. With regular TCP, all packets from
+each connection would either pass through Mbox1 or Mbox2. With Multipath TCP, the client
+can easily establish a subflow over network1 and another over network2 and each middlebox
+would only observe a part of the traffic of the end-to-end Multipath TCP connection.
+
+~~~~~~~~~~
+
+  client ----R-- network1  --- MBox1 -----R------------- server
+             |                            |
+             +-- network2  --- MBox2 -----+
+
+~~~~~~~~~~
+{: #figcsmbox title="Interactions between load balancing and security Middleboxes"}
+
+
+In these two cases, it is possible for an attacker to evade some security measures
+operating on the TCP bytestream and implemented on the middleboxes by controlling 
+the bytes that are actually sent over each subflow and there are tools that ease
+those kinds of evasion {{PZ15}} {{PT14}}. This is not a security issue for Multipath TCP itself
+since Multipath TCP behaves correctly. However, this demonstrates the difficulty of
+enforcing security policies by relying only on on-path middleboxes instead of enforcing
+them directly on the endpoints. 
 
 
 

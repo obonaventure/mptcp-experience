@@ -1422,6 +1422,17 @@ TCP implementation in the Linux kernel. This document has
 benefited from the comments of John Ronan, Yoshifumi Nishida,
 Phil Eardley, Jaehyun Hwang and Mirja Kuehlewind.
 
+
+Security Considerations
+=======================
+
+
+This informational document discusses use-cases and operational experience with
+Multipath TCP. An extensive analysis of the remaining security issues in the
+Multipath TCP specification has been published in {{RFC7430}}, together with
+suggestions for possible solutions.
+
+
 --- back
 
 Changelog
